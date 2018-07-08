@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Bootstrap 4, from LayoutIt!</title>
+
+  <meta name="description" content="Source code generated using layoutit.com">
+  <meta name="author" content="LayoutIt!">
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet"> <link rel="css/stylesheet" href="simpleTimeline.css">
+
+</head>
+<body>
+
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <div class="row">
+      <div class="col-md-6">
+        Running System:
+        <input  class="total_system" type="input" name="total_system" size=10 value=30>
+        <div class="divTable">
+          <div class="divTableBody" id="list">
+
+          </div>
+          <button onclick="update()">update</button>
+          <button onclick="run1000()">Start</button>
+          <p id="running_day"></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div id='result'></div>
+      <div id="waterfall" style="height: 2000px;"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script src="js/scripts.js"></script>
+
+<script>
+  run1000()
+  
+ 
+</script>
+
+</body>
+</html>
