@@ -173,10 +173,11 @@ var start = function(){
 						}else {s.history.push([job.name, day, job.day])}
 
 					}					
-					jobs.pop()
+					// jobs.pop()
+					jobs.splice(i,1)
 				}
 				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
-				else { break }
+				else { continue }
 			}
 			day++
 			running()
