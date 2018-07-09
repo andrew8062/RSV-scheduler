@@ -19,13 +19,8 @@ var job_max_day = function(jobs){
 }
 
 function compare(a,b){
-<<<<<<< HEAD
-		if (a.day == max_day) {return 1}
-		if(a.fetal && !b.fetal) {return -1}
-		if (a.day < b.day) { return -1}
-=======
+
 		// if (a.day == max_day) {return 1}
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 		if (a.day > b.day) { return 1}
 		if (a.day < b.day) { return -1}
 		if(a.fetal && !b.fetal) {return -1}
@@ -40,11 +35,8 @@ var system = function(id, running, available){
 	this.history = []
 }
 
-<<<<<<< HEAD
-default_jobs = []
-=======
+
 let default_jobs = []
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 default_jobs.push(new job("temperature humidity test", 10,4, true))
 default_jobs.push(new job("System Pogo", 7,2))
 default_jobs.push(new job("Weighted Shock", 1,2))
@@ -66,14 +58,10 @@ default_jobs.push(new job("vibration", 2,2,true))
 default_jobs.push(new job("Strain test", 2,1,true))
 default_jobs.push(new job("Palm rest vibration", 1,2))
 default_jobs.push(new job("Hinge cycle abrasion", 3,3))
-let max_day = job_max_day(default_jobs)
 
-html = ''
-=======
 let max_day = job_max_day(default_jobs)
 let html = ''
 
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 html +=`
 <div class="divTableRow">
     <div class="divTableCell">Name</div>
@@ -120,14 +108,7 @@ var start = function(){
 		default_systems.push(new system(i, 0, true))
 	}
 	//retrive data from original dataset
-<<<<<<< HEAD
-	jobs = JSON.parse(JSON.stringify(default_jobs))
-	systems = JSON.parse(JSON.stringify(default_systems))
-	//Using shuffle or static sort
-	// shuffleArray(jobs)
-	jobs.sort(compare)
 
-=======
 	let jobs = JSON.parse(JSON.stringify(default_jobs))
 	let systems = JSON.parse(JSON.stringify(default_systems))
 	//Using shuffle or static sort
@@ -136,7 +117,6 @@ var start = function(){
 	for (let i in jobs){
 		// console.log(jobs[i])
 	}
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 	//check if exist a system that still running
 	let running_systems = function(){
 		for (var i in systems){
@@ -180,15 +160,10 @@ var start = function(){
 		//keep running until all jobs are done and no systems are running for remaining jobs
 		while (jobs.length > 0 || running_systems()){
 			//loop jobs backward
-<<<<<<< HEAD
-			for (var i = jobs.length-1; i>=0; i--){
-				
-				job = jobs[i]
-=======
+
 			for (let i = jobs.length-1; i>=0; i--){
 				let job = jobs[i]
 				// console.log(job)
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 				//get empty systems
 				available_systems = find_empty_system(job.unit)
 				if (available_systems){
@@ -199,15 +174,7 @@ var start = function(){
 						if (job.fetal){
 							s.available = false
 							s.history.push([job.name+"(D)", day, job.day])
-<<<<<<< HEAD
-						}else {s.history.push([job.name, day, job.day])
-}
-					}
-					jobs.pop()
-				}
-				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
-				else { break }
-=======
+
 						}else {s.history.push([job.name, day, job.day])}
 
 					}					
@@ -216,7 +183,6 @@ var start = function(){
 				}
 				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
 				else { continue }
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 			}
 			day++
 			running()
@@ -250,17 +216,10 @@ var run1000 = function(n)
 	//update current value from HTML
 	update()
 	let resultHTML = ""
-<<<<<<< HEAD
-	let day = 0
-	
-	result = start().simulator()
-	day = result[0]
-	systems = result[1]
-=======
+
 	let result = start().simulator()
 	let day = result[0]
 	let systems = result[1]
->>>>>>> 3a4a5ed597345b589eb803fd1d5603a32fd76f42
 
 	systems = JSON.parse(systems)
 	output_google_chart_format(systems)
