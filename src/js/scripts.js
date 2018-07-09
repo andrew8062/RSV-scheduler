@@ -8,14 +8,18 @@ var job = function(name, day, unit, fetal=false){
 	this.info = function(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' fetal: '+this.fetal
 	}
-	
 }
 
-
-
+var job_max_day = function(jobs){
+	let max = 0
+	jobs.forEach(function(job){
+		if (job.day > max) {max = job.day}
+	})
+	return max
+}
 
 function compare(a,b){
-		if (a.day == 10) { return 1}
+		if (a.day == max_day) {return 1}
 		if(a.fetal && !b.fetal) {return -1}
 		if (a.day < b.day) { return -1}
 		if (a.day > b.day) { return 1}
@@ -30,7 +34,6 @@ var system = function(id, running, available){
 }
 
 default_jobs = []
-
 default_jobs.push(new job("temperature humidity test", 10,4, true))
 default_jobs.push(new job("System Pogo", 7,2))
 default_jobs.push(new job("Weighted Shock", 1,2))
@@ -52,6 +55,8 @@ default_jobs.push(new job("vibration", 2,2,true))
 default_jobs.push(new job("Strain test", 2,1,true))
 default_jobs.push(new job("Palm rest vibration", 1,2))
 default_jobs.push(new job("Hinge cycle abrasion", 3,3))
+let max_day = job_max_day(default_jobs)
+
 html = ''
 html +=`
 <div class="divTableRow">
@@ -90,19 +95,24 @@ var update = function(){
 		default_jobs[i].unit = parseInt(unit[i].value)
 		default_jobs[i].fetal = fetal[i].checked
 	}
-
 }
-var start = function(n=35){
+var start = function(){
 	// console.log('start++')
-	default_systems = []
+
+	//get number of system from HTML and creat systems
+	let default_systems = []
 	let total_system = parseInt(document.getElementsByClassName('total_system')[0].value)
 	for (var i = 0; i<total_system; i++){
 		default_systems.push(new system(i, 0, true))
 	}
+	//retrive data from original dataset
 	jobs = JSON.parse(JSON.stringify(default_jobs))
 	systems = JSON.parse(JSON.stringify(default_systems))
+	//Using shuffle or static sort
 	// shuffleArray(jobs)
 	jobs.sort(compare)
+
+	//check if exist a system that still running
 	let running_systems = function(){
 		for (var i in systems){
 			if (systems[i].running){
@@ -112,6 +122,7 @@ var start = function(n=35){
 		return false
 	}
 
+	//find minmim of n number of available systems
 	let find_empty_system = function(num=1){
 		available = []
 		for (var i in systems){
@@ -126,6 +137,7 @@ var start = function(n=35){
 		return available.slice(0,num)
 	}
 
+	//let all systems run of 1 day
 	let running = function(){
 		for (var i in systems){
 			if (systems[i].running > 0){
@@ -136,45 +148,41 @@ var start = function(n=35){
 
 
 
-	let simulator = function(day){
+	let simulator = function(){
 		// console.log('simulaotr++')
 		let best_result =""
-
+		let day = 0
+		//keep running until all jobs are done and no systems are running for remaining jobs
 		while (jobs.length > 0 || running_systems()){
-			// console.log('while++')
+			//loop jobs backward
 			for (var i = jobs.length-1; i>=0; i--){
-				// console.log('for++: '+i)
-				job = jobs[i]
 				
+				job = jobs[i]
+				//get empty systems
 				available_systems = find_empty_system(job.unit)
 				if (available_systems){
 					for (var j in available_systems){
 						s = available_systems[j]
 						s.running = job.day
+						//if the job will damage system, system will be marked as not avaiable
 						if (job.fetal){
 							s.available = false
 							s.history.push([job.name+"(D)", day, job.day])
 						}else {s.history.push([job.name, day, job.day])
 }
 					}
-					// console.log('job shift')
 					jobs.pop()
 				}
+				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
 				else { break }
-				// console.log('for--')
 			}
 			day++
-			// console.log('running')
 			running()
 			
 		}
 		// console.log(day)
 		best_result = JSON.stringify(systems)
 		return [day, best_result]
-	}
-
-	let start = function(){
-		for (var i = 0; i<5; i++) {simulator(0)}
 	}
 	/**
 	 * Randomize array element order in-place.
@@ -188,41 +196,29 @@ var start = function(n=35){
 	        array[j] = temp;
 	    }
 	}
-
 	return{
 		simulator:simulator,
-		start:start,
+		
 
 
 	}
 }
 var run1000 = function(n)
 {
-	let min_day = 999
+	//update current value from HTML
+	update()
 	let resultHTML = ""
 	let day = 0
-
-	day, systems = start(n).simulator(0)
-
-	for(var i=0; i<1; i++ ){
-		[day, systems] = start(n).simulator(0)
-		if (min_day > day) {min_day = day}
-	}
+	
+	result = start().simulator()
+	day = result[0]
+	systems = result[1]
 
 	systems = JSON.parse(systems)
 	output_google_chart_format(systems)
-	//output result to HTML
-	// for (let i in systems){
-	// 	let index = parseInt(i)+1
-	// 	if (i%2 == 0) {resultHTML += "<font color='red'>"}
-	// 	else if(i%2 == 1) {resultHTML += "<font color='blue'>"}
-	// 	resultHTML += "System: "+ index +"  "
-	// 	resultHTML += systems[i].history
-	// 	resultHTML += "</font>"
-	// 	resultHTML += "</br>"
-	// }
-	document.getElementById('running_day').innerHTML = "Need minimum "+min_day+" days";
-	return min_day
+
+	document.getElementById('running_day').innerHTML = "Need minimum "+day+" days";
+	return day
 }
 
 
@@ -232,7 +228,6 @@ var output_google_chart_format = function(systems){
 		system_histories = systems[i].history
 		for (let j in system_histories){
 				let logs = system_histories[j]
-				// console.log(i +' '+ logs)
 				if (logs[0] != "DESTORYED"){
 					let id = i
 					ms_to_day = 86400000
@@ -242,7 +237,6 @@ var output_google_chart_format = function(systems){
 				}
 			}
 		}
-	console.log(google_chart_data)
 	output_google_chart(google_chart_data)
 
   }
