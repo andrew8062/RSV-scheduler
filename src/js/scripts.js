@@ -24,6 +24,8 @@ function compare(a,b){
 		if (a.day > b.day) { return 1}
 		if (a.day < b.day) { return -1}
 		if(a.fetal && !b.fetal) {return -1}
+		if(a.unit > b.unit) {return 1}
+		if(a.unit < b.unit) {return -1}	
 
 		return 0;
 	}
@@ -98,12 +100,11 @@ var update = function(){
 		default_jobs[i].fetal = fetal[i].checked
 	}
 }
-var start = function(){
+var start = function(total_system){
 	// console.log('start++')
 
 	//get number of system from HTML and creat systems
 	let default_systems = []
-	let total_system = parseInt(document.getElementsByClassName('total_system')[0].value)
 	for (var i = 0; i<total_system; i++){
 		default_systems.push(new system(i, 0, true))
 	}
@@ -216,8 +217,9 @@ var run1000 = function(n)
 	//update current value from HTML
 	update()
 	let resultHTML = ""
+	let total_system = parseInt(document.getElementsByClassName('total_system')[0].value)
 
-	let result = start().simulator()
+	let result = start(total_system).simulator()
 	let day = result[0]
 	let systems = result[1]
 
