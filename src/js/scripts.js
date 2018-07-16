@@ -1,13 +1,13 @@
 
-var job = function(name, day, unit, fetal=false, tier=1){
+var job = function(name, day, unit, destoryed=false, tier=1){
 	this.name = name
 	this.day = day
 	this.unit = unit
-	this.fetal = fetal
+	this.destoryed = destoryed
 	this.tier = tier
 
 	this.info = function(){
-		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' fetal: '+this.fetal + ' tier: ' + this.tier
+		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
 	}
 }
 
@@ -27,8 +27,8 @@ function compare(a,b){
 		if (a.tier > b.tier) { return -1}
 		if (a.tier < b.tier) {return 1}
 
-		if(a.fetal && !b.fetal) {return -1}
-		if(!a.fetal && b.fetal) {return 1}		
+		if(a.destoryed && !b.destoryed) {return -1}
+		if(!a.destoryed && b.destoryed) {return 1}		
 
 		if (a.day > b.day) { return 1}
 		if (a.day < b.day) { return -1}
@@ -94,7 +94,7 @@ html +=`
   </div>
 `
 for (let i in default_jobs){
-	let fetal = default_jobs[i].fetal ? "checked" :""
+	let destoryed = default_jobs[i].destoryed ? "checked" :""
 	html+=
 	`
 	<div class="divTableRow" id=`+ i +`>
@@ -103,7 +103,7 @@ for (let i in default_jobs){
 	    <div class="divTableCell"><input class='day' type="text" name="day" size=3 value=`+ default_jobs[i].day+`></div>
 	    <div class="divTableCell"><input class='unit' type="text" name="unit" size =3 value=`+ default_jobs[i].unit +`></div>
 	   	<div class="divTableCell"><input class='tier' type="text" name="tier" size =3 value=`+ default_jobs[i].tier +`></div>
-	    <div class="divTableCell"><input class='destoryed' type="checkbox" name="firstname " `+ fetal +` ></div>
+	    <div class="divTableCell"><input class='destoryed' type="checkbox" name="firstname " `+ destoryed +` ></div>
 	  </div>
 	  `
 }
@@ -114,21 +114,37 @@ var update = function(){
 	let day = document.getElementsByClassName('day')
 	let unit = document.getElementsByClassName('unit')
 	let tier = document.getElementsByClassName('tier')
-	let fetal = document.getElementsByClassName('destoryed')
+	let destoryed = document.getElementsByClassName('destoryed')
 
 	for (let i in default_jobs){
 		default_jobs[i].day = parseInt(day[i].value)
 		default_jobs[i].unit = parseInt(unit[i].value)
 		default_jobs[i].tier = parseInt(tier[i].value)
-		default_jobs[i].fetal = fetal[i].checked
+		default_jobs[i].destoryed = destoryed[i].checked
 	}
 }
-var start = function(total_system){
+
+var checkMinimumSystem = function(){
+	let maxSystemPerTestItem = 0
+	let totalDestoryedSystem = 0
+
+	for( i in default_jobs ){
+		if (default_jobs[i].destoryed){
+			totalDestoryedSystem += default_jobs[i].unit
+		}
+		else if( default_jobs[i].unit > maxSystemPerTestItem ){
+			maxSystemPerTestItem = default_jobs[i].unit
+		}
+	}
+	return maxSystemPerTestItem + totalDestoryedSystem
+}
+
+var start = function(totalSystem){
 	// console.log('start++')
 
 	//get number of system from HTML and creat systems
 	let default_systems = []
-	for (var i = 0; i<total_system; i++){
+	for (var i = 0; i<totalSystem; i++){
 		default_systems.push(new system(i, 0, true))
 	}
 	//retrive data from original dataset
@@ -195,7 +211,7 @@ var start = function(total_system){
 						s = available_systems[j]
 						s.running = job.day
 						//if the job will damage system, system will be marked as not avaiable
-						if (job.fetal){
+						if (job.destoryed){
 							s.available = false
 							s.history.push([job.name+"(D)", job.tier, day, job.day])
 
@@ -238,10 +254,16 @@ var run1000 = function(n)
 {
 	//update current value from HTML
 	update()
-	let resultHTML = ""
-	let total_system = parseInt(document.getElementsByClassName('total_system')[0].value)
+	let totalSystem = parseInt(document.getElementsByClassName('total_system')[0].value)
 
-	let result = start(total_system).simulator()
+	let minSystem = checkMinimumSystem()
+	if ( totalSystem < minSystem ){
+		alert("You need at least "+minSystem+" to run this RSV test plan")
+		return 0
+	}
+	let resultHTML = ""
+
+	let result = start(totalSystem).simulator()
 	let day = result[0]
 	let systems = result[1]
 
