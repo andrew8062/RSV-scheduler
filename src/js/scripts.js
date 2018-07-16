@@ -189,7 +189,7 @@ var start = function(total_system){
 				let job = jobs[i]
 				// console.log(job)
 				//get empty systems
-				available_systems = find_empty_system(job.unit)
+				let available_systems = find_empty_system(job.unit)
 				if (available_systems){
 					for (let j in available_systems){
 						s = available_systems[j]
@@ -197,9 +197,9 @@ var start = function(total_system){
 						//if the job will damage system, system will be marked as not avaiable
 						if (job.fetal){
 							s.available = false
-							s.history.push([job.name+"(D)", day, job.day])
+							s.history.push([job.name+"(D)", job.tier, day, job.day])
 
-						}else {s.history.push([job.name, day, job.day])}
+						}else {s.history.push([job.name, job.tier, day, job.day])}
 
 					}					
 					// jobs.pop()
@@ -230,7 +230,6 @@ var start = function(total_system){
 	}
 	return{
 		simulator:simulator,
-		
 
 
 	}
@@ -259,18 +258,20 @@ var output_google_chart_format = function(systems){
 	for (let i in systems){
 		let system_histories = systems[i].history
 		for (let j in system_histories){
-				let logs = system_histories[j]
-				if (logs[0] != "DESTORYED"){
-					let id = i
-					let ms_to_day = 86400000
-					let start = logs[1]*ms_to_day
-					let end = start + logs[2]*ms_to_day
-					google_chart_data.push([id, logs[0], start, end])					
-				}
+				let history = system_histories[j]
+				let name = history[0]
+				let tier = history[1]
+				let id = i
+				let ms_to_day = 86400000
+				let start = history[2]*ms_to_day
+				let end = start + history[3]*ms_to_day
+
+				color = tier == 1 ? '#e63b6f' : '#19fce1'
+				google_chart_data.push([id, name, color, start, end])					
 			}
 		}
 	output_google_chart(google_chart_data)
-
+	console.log(google_chart_data)
   }
 
   var output_google_chart = function(chart_data){
@@ -283,10 +284,32 @@ var output_google_chart_format = function(systems){
 
 	    dataTable.addColumn({ type: 'string', id: 'Term' });
 	    dataTable.addColumn({ type: 'string', id: 'Name' });
+		dataTable.addColumn({ type: 'string', role: 'style'});
 	    dataTable.addColumn({ type: 'number', id: 'Start' });
 	    dataTable.addColumn({ type: 'number', id: 'End' });
-
 	    dataTable.addRows(chart_data);
+	    
+	    //customize bar shape+
+		var observer = new MutationObserver(setBorderRadius);
+		  google.visualization.events.addListener(chart, 'ready', function () {
+		    setBorderRadius();
+		    observer.observe(container, {
+		      childList: true,
+		      subtree: true
+		    });
+		  });
+
+		  function setBorderRadius() {
+		    Array.prototype.forEach.call(container.getElementsByTagName('rect'), function (rect) {
+		      if (parseFloat(rect.getAttribute('x')) > 0) {
+		        rect.setAttribute('rx', 20);
+		        rect.setAttribute('ry', 20);
+		      }
+		    });
+		  }
+	    //customize bar shape-
+
+
 		
 	    chart.draw(dataTable)
   }
