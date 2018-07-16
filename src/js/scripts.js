@@ -1,11 +1,11 @@
 
-var job = function(name, day, unit, destoryed=false, tier=1){
+var job = function(name, day, unit, tier=1, destoryed=false ){
 	this.name = name
 	this.day = day
 	this.unit = unit
 	this.destoryed = destoryed
 	this.tier = tier
-
+	this.select = true
 	this.info = function(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
 	}
@@ -47,13 +47,13 @@ var system = function(id, running, available){
 
 
 let default_jobs = []
-default_jobs.push(new job("Temperature/Humidity Test Non Operational", 7,9, true))
+default_jobs.push(new job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
 default_jobs.push(new job("Torsion Test (50k)", 5,3))
 default_jobs.push(new job("System Pogo", 7,3))
 default_jobs.push(new job("Weighted Shock Test", 1,2))
-default_jobs.push(new job("Edu Durability Test", 10,5, true))
-default_jobs.push(new job("Free Fall Drop", 3,3, true))
-default_jobs.push(new job("Temperature/Voltage Margining Test", 10,2, false, tier=2))
+default_jobs.push(new job("Edu Durability Test", 10,5, 1, true))
+default_jobs.push(new job("Free Fall Drop", 3,3, 1, true))
+default_jobs.push(new job("Temperature/Voltage Margining Test", 10,2, 2, true))
 
 default_jobs.push(new job("Wrenching Test", 7,4))
 default_jobs.push(new job("Buffing", 1,2))
@@ -63,21 +63,21 @@ default_jobs.push(new job("LCD POGO", 5,3))
 default_jobs.push(new job("Palmrest POGO", 5,3))
 default_jobs.push(new job("Button Cycling", 6,3))
 default_jobs.push(new job("Module Cycling", 6,4))
-default_jobs.push(new job("Power Button+ Finger Print Reader Combo Test", 10, 4,false, tier=2))
+default_jobs.push(new job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
 
-default_jobs.push(new job("Thermal Shock", 5,5, true))
-default_jobs.push(new job("Liquid Spill Test", 5,5, true))
+default_jobs.push(new job("Thermal Shock", 5,5, 1, true))
+default_jobs.push(new job("Liquid Spill Test", 5,5, 1, true))
 default_jobs.push(new job("Hinge Cycling Test", 5,5))
-default_jobs.push(new job("Random Vibration", 2,2,true))
-default_jobs.push(new job("Half-Sine Shock", 2,2,true))
-default_jobs.push(new job("Shock Strain Test  (Intel and AMD MB only)", 3,1,true))
+default_jobs.push(new job("Random Vibration", 2,2, 1, true))
+default_jobs.push(new job("Half-Sine Shock", 2,2,1, true))
+default_jobs.push(new job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
 
 default_jobs.push(new job("Palm Rest Vibration",1,2))
-default_jobs.push(new job("Hinge Cycle Abrasion", 12,2, false, tier=2))
-default_jobs.push(new job("Durability A Group", 5,4, true))
-default_jobs.push(new job("Durability B Group", 5,4, true))
-default_jobs.push(new job("Durability C Group", 5,4, true))
-default_jobs.push(new job("System Foot Abrasion", 7,5, false, tier=2))
+default_jobs.push(new job("Hinge Cycle Abrasion", 12,2,2))
+default_jobs.push(new job("Durability A Group", 5,4, 1,true))
+default_jobs.push(new job("Durability B Group", 5,4, 1,true))
+default_jobs.push(new job("Durability C Group", 5,4, 1,true))
+default_jobs.push(new job("System Foot Abrasion", 7,5,  2))
 
 
 let max_day = job_max_day(default_jobs)
@@ -94,29 +94,31 @@ html +=`
   </div>
 `
 for (let i in default_jobs){
-	let destoryed = default_jobs[i].destoryed ? "checked" :""
+	let destoryedHTML = default_jobs[i].destoryed ? "checked" :""
+	let selectHTML = default_jobs[i].select ? "checked" :""
 	html+=
 	`
 	<div class="divTableRow" id=`+ i +`>
 	    <div class="divTableCell">`+ default_jobs[i].name +`</div>
-	    <div class="divTableCell"><input class='selector' type="checkbox" name="select""></div>
+	    <div class="divTableCell"><input class='selector' type="checkbox" name="select" `+ selectHTML +`></div>
 	    <div class="divTableCell"><input class='day' type="text" name="day" size=3 value=`+ default_jobs[i].day+`></div>
 	    <div class="divTableCell"><input class='unit' type="text" name="unit" size =3 value=`+ default_jobs[i].unit +`></div>
 	   	<div class="divTableCell"><input class='tier' type="text" name="tier" size =3 value=`+ default_jobs[i].tier +`></div>
-	    <div class="divTableCell"><input class='destoryed' type="checkbox" name="firstname " `+ destoryed +` ></div>
+	    <div class="divTableCell"><input class='destoryed' type="checkbox" name="firstname " `+ destoryedHTML +` ></div>
 	  </div>
 	  `
 }
 
 document.getElementById('list').innerHTML = html;
 var update = function(){
-	let select = document.getElementsByClassName('selector')
+	let selector = document.getElementsByClassName('selector')
 	let day = document.getElementsByClassName('day')
 	let unit = document.getElementsByClassName('unit')
 	let tier = document.getElementsByClassName('tier')
 	let destoryed = document.getElementsByClassName('destoryed')
 
 	for (let i in default_jobs){
+		default_jobs[i].select = selector[i].checked
 		default_jobs[i].day = parseInt(day[i].value)
 		default_jobs[i].unit = parseInt(unit[i].value)
 		default_jobs[i].tier = parseInt(tier[i].value)
@@ -149,7 +151,15 @@ var start = function(totalSystem){
 	}
 	//retrive data from original dataset
 
-	let jobs = JSON.parse(JSON.stringify(default_jobs))
+	jobs = JSON.parse(JSON.stringify(default_jobs))
+
+
+	for (let i=jobs.length-1; i>=0; i--){ 
+		console.log(jobs[i])
+		if ( jobs[i].select == false){
+			jobs.splice(i,1)
+		}
+	}
 	let systems = JSON.parse(JSON.stringify(default_systems))
 	//Using shuffle or static sort
 	// shuffleArray(jobs)
