@@ -1,0 +1,60 @@
+P1 (1st priority, set 10 days)	Working Days	Units
+Temperature/Humidity Test Non Operational	7	9
+Torsion Test (50k)	5	3
+System Pogo (All test cases and one round battery Pogo)	7	3
+Weighted Shock Test 	1	2
+Edu Durability Test	10	5  X
+Temperature/Voltage Margining Test   *P2	10	2
+Free Fall Drop	3	3  X
+Wrenching Test	7	4
+Buffing	1	2
+LCD Wobble	1	2
+LCD POGO (5k cycle)	5	3
+Palmrest POGO (5k cycle)	5	3
+Button Cycling (40k)	6	3
+Module Cycling	6	4
+Power Button+ Finger Print Reader Combo Test    *P2	10	4
+Thermal Shock	5	5  X
+Liquid Spill Test	5	5  X
+Hinge Cycling Test	5	5
+Operational Random Vibration	2	2  X
+Non-Operational Random Vibration		
+Operational Half-Sine Shock	2	2  X
+Non-Operational Half-Sine Shock		
+Shock Strain Test  (Intel and AMD MB only)	3	1  X
+Palm Rest Vibration 	1	2
+Hinge Cycle Abrasion    *P2	12	2
+Durability A Group	5	4  X
+Durability B Group	5	4  X
+Durability C Group	5	4  X
+System Foot Abrasion   *P2	7	5
+
+Temperature/Humidity Test Non Operational
+Torsion Test (50k)
+System Pogo (All test cases and one round battery Pogo)
+Weighted Shock Test 
+Edu Durability Test
+Temperature/Voltage Margining Test   *P2
+Free Fall Drop
+Wrenching Test
+Buffing
+LCD Wobble
+LCD POGO (5k cycle)
+Palmrest POGO (5k cycle)
+Button Cycling (40k)
+Module Cycling
+Power Button+ Finger Print Reader Combo Test    *P2
+Thermal Shock
+Liquid Spill Test
+Hinge Cycling Test
+Operational Random Vibration
+Non-Operational Random Vibration
+Operational Half-Sine Shock
+Non-Operational Half-Sine Shock
+Shock Strain Test  (Intel and AMD MB only)
+Palm Rest Vibration 
+Hinge Cycle Abrasion    *P2
+Durability A Group
+Durability B Group
+Durability C Group
+System Foot Abrasion   *P2
