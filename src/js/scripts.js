@@ -22,32 +22,9 @@ class System{
 }
 
 
-var job_max_day = function(jobs){
-	let max = 0
-	jobs.forEach(function(job){
-		if (job.day > max) {max = job.day}
-	})
-	return max
-}
-
-function compare(a,b){
-
-		// if (a.day == max_day) {return 1}
 
 
-		if (a.tier > b.tier) { return -1}
-		if (a.tier < b.tier) {return 1}
 
-		if(a.destoryed && !b.destoryed) {return -1}
-		if(!a.destoryed && b.destoryed) {return 1}		
-
-		if (a.day > b.day) { return 1}
-		if (a.day < b.day) { return -1}
-
-		if(a.unit > b.unit) {return 1}
-		if(a.unit < b.unit) {return -1}	
-		return 0;
-	}
 
 //update HTML
 var updateFromHTML = function(){
@@ -102,7 +79,6 @@ var initialDefaultTestingItem = function(){
 initialDefaultTestingItem()
 
 
-let max_day = job_max_day(default_jobs)
 let html = ''
 
 html +=`
@@ -160,17 +136,18 @@ var checkMinimumSystem = function(totalSystem, minSystem){
 	return true
 }
 
-let removeUnselectedItem = function(jobs){
+
+
+var simulator = function(totalSystem){
+	// console.log('start++')
+	let removeUnselectedItem = function(jobs){
 	for (let i=jobs.length-1; i>=0; i--){ 
 		if ( jobs[i].select == false){
 			jobs.splice(i,1)
 		}
 	}
 	return jobs
-}
-
-var simulator = function(totalSystem){
-	// console.log('start++')
+	}
 
 	//get number of system from HTML and creat systems
 	let default_systems = []
@@ -196,6 +173,22 @@ var simulator = function(totalSystem){
 			}
 		}
 		return false
+	}
+	
+	function compare(a,b){
+
+		if (a.tier > b.tier) { return -1}
+		if (a.tier < b.tier) {return 1}
+
+		if(a.destoryed && !b.destoryed) {return -1}
+		if(!a.destoryed && b.destoryed) {return 1}		
+
+		if (a.day > b.day) { return 1}
+		if (a.day < b.day) { return -1}
+
+		if(a.unit > b.unit) {return 1}
+		if(a.unit < b.unit) {return -1}	
+		return 0;
 	}
 
 	//find minmim of n number of available systems
@@ -270,7 +263,7 @@ var simulator = function(totalSystem){
 	    }
 	}
 	return{
-		startRunning:startRunning,
+		startRunning,
 
 
 	}
