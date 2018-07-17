@@ -1,15 +1,26 @@
 
-var job = function(name, day, unit, tier=1, destoryed=false ){
+class Job {
+  constructor(name, day, unit, tier=1, destoryed=false) {
 	this.name = name
 	this.day = day
 	this.unit = unit
 	this.destoryed = destoryed
 	this.tier = tier
 	this.select = true
-	this.info = function(){
+	}
+	info(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
+	}  
+}
+class System{
+	constructor(id, running, available){
+		this.id = id
+		this.running = running
+		this.available = available
+		this.history = []
 	}
 }
+
 
 var job_max_day = function(jobs){
 	let max = 0
@@ -38,47 +49,56 @@ function compare(a,b){
 		return 0;
 	}
 
-var system = function(id, running, available){
-	this.id = id
-	this.running = running
-	this.available = available
-	this.history = []
+//update HTML
+var updateFromHTML = function(){
+	let selector = document.getElementsByClassName('selector')
+	let day = document.getElementsByClassName('day')
+	let unit = document.getElementsByClassName('unit')
+	let tier = document.getElementsByClassName('tier')
+	let destoryed = document.getElementsByClassName('destoryed')
+
+	for (let i in default_jobs){
+		default_jobs[i].select = selector[i].checked
+		default_jobs[i].day = parseInt(day[i].value)
+		default_jobs[i].unit = parseInt(unit[i].value)
+		default_jobs[i].tier = parseInt(tier[i].value)
+		default_jobs[i].destoryed = destoryed[i].checked
+	}
 }
 
 
 let default_jobs = []
-default_jobs.push(new job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
-default_jobs.push(new job("Torsion Test (50k)", 5,3))
-default_jobs.push(new job("System Pogo", 7,3))
-default_jobs.push(new job("Weighted Shock Test", 1,2))
-default_jobs.push(new job("Edu Durability Test", 10,5, 1, true))
-default_jobs.push(new job("Free Fall Drop", 3,3, 1, true))
-default_jobs.push(new job("Temperature/Voltage Margining Test", 10,2, 2, true))
+initialDefaultTestingItem()
 
-default_jobs.push(new job("Wrenching Test", 7,4))
-default_jobs.push(new job("Buffing", 1,2))
-default_jobs.push(new job("LCD Wobble", 1,2))
-default_jobs.push(new job("LCD POGO", 5,3))
-
-default_jobs.push(new job("Palmrest POGO", 5,3))
-default_jobs.push(new job("Button Cycling", 6,3))
-default_jobs.push(new job("Module Cycling", 6,4))
-default_jobs.push(new job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
-
-default_jobs.push(new job("Thermal Shock", 5,5, 1, true))
-default_jobs.push(new job("Liquid Spill Test", 5,5, 1, true))
-default_jobs.push(new job("Hinge Cycling Test", 5,5))
-default_jobs.push(new job("Random Vibration", 2,2, 1, true))
-default_jobs.push(new job("Half-Sine Shock", 2,2,1, true))
-default_jobs.push(new job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
-
-default_jobs.push(new job("Palm Rest Vibration",1,2))
-default_jobs.push(new job("Hinge Cycle Abrasion", 12,2,2))
-default_jobs.push(new job("Durability A Group", 5,4, 1,true))
-default_jobs.push(new job("Durability B Group", 5,4, 1,true))
-default_jobs.push(new job("Durability C Group", 5,4, 1,true))
-default_jobs.push(new job("System Foot Abrasion", 7,5,  2))
-
+const initialDefaultTestingItem = function(){
+	default_jobs.push(new Job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
+	default_jobs.push(new Job("Torsion Test (50k)", 5,3))
+	default_jobs.push(new Job("System Pogo", 7,3))
+	default_jobs.push(new Job("Weighted Shock Test", 1,2))
+	default_jobs.push(new Job("Edu Durability Test", 10,5, 1, true))
+	default_jobs.push(new Job("Free Fall Drop", 3,3, 1, true))
+	default_jobs.push(new Job("Temperature/Voltage Margining Test", 10,2, 2, true))
+	default_jobs.push(new Job("Wrenching Test", 7,4))
+	default_jobs.push(new Job("Buffing", 1,2))
+	default_jobs.push(new Job("LCD Wobble", 1,2))
+	default_jobs.push(new Job("LCD POGO", 5,3))
+	default_jobs.push(new Job("Palmrest POGO", 5,3))
+	default_jobs.push(new Job("Button Cycling", 6,3))
+	default_jobs.push(new Job("Module Cycling", 6,4))
+	default_jobs.push(new Job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
+	default_jobs.push(new Job("Thermal Shock", 5,5, 1, true))
+	default_jobs.push(new Job("Liquid Spill Test", 5,5, 1, true))
+	default_jobs.push(new Job("Hinge Cycling Test", 5,5))
+	default_jobs.push(new Job("Random Vibration", 2,2, 1, true))
+	default_jobs.push(new Job("Half-Sine Shock", 2,2,1, true))
+	default_jobs.push(new Job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
+	default_jobs.push(new Job("Palm Rest Vibration",1,2))
+	default_jobs.push(new Job("Hinge Cycle Abrasion", 12,2,2))
+	default_jobs.push(new Job("Durability A Group", 5,4, 1,true))
+	default_jobs.push(new Job("Durability B Group", 5,4, 1,true))
+	default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
+	default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
+}
 
 let max_day = job_max_day(default_jobs)
 let html = ''
@@ -93,6 +113,7 @@ html +=`
     <div class="divTableCell">Destoryed</div>
   </div>
 `
+//generate table HTML output
 for (let i in default_jobs){
 	let destoryedHTML = default_jobs[i].destoryed ? "checked" :""
 	let selectHTML = default_jobs[i].select ? "checked" :""
@@ -110,21 +131,8 @@ for (let i in default_jobs){
 }
 
 document.getElementById('list').innerHTML = html;
-var update = function(){
-	let selector = document.getElementsByClassName('selector')
-	let day = document.getElementsByClassName('day')
-	let unit = document.getElementsByClassName('unit')
-	let tier = document.getElementsByClassName('tier')
-	let destoryed = document.getElementsByClassName('destoryed')
 
-	for (let i in default_jobs){
-		default_jobs[i].select = selector[i].checked
-		default_jobs[i].day = parseInt(day[i].value)
-		default_jobs[i].unit = parseInt(unit[i].value)
-		default_jobs[i].tier = parseInt(tier[i].value)
-		default_jobs[i].destoryed = destoryed[i].checked
-	}
-}
+
 
 var checkMinimumSystem = function(){
 	let maxSystemPerTestItem = 0
@@ -141,25 +149,28 @@ var checkMinimumSystem = function(){
 	return maxSystemPerTestItem + totalDestoryedSystem
 }
 
-var start = function(totalSystem){
-	// console.log('start++')
-
-	//get number of system from HTML and creat systems
-	let default_systems = []
-	for (var i = 0; i<totalSystem; i++){
-		default_systems.push(new system(i, 0, true))
-	}
-	//retrive data from original dataset
-
-	jobs = JSON.parse(JSON.stringify(default_jobs))
-
-
+let removeUnselectedItem = function(jobs){
 	for (let i=jobs.length-1; i>=0; i--){ 
 		console.log(jobs[i])
 		if ( jobs[i].select == false){
 			jobs.splice(i,1)
 		}
 	}
+	return jobs
+}
+
+var start = function(totalSystem){
+	// console.log('start++')
+
+	//get number of system from HTML and creat systems
+	let default_systems = []
+	for (var i = 0; i<totalSystem; i++){
+		default_systems.push(new System(i, 0, true))
+	}
+	//retrive data from original dataset
+	jobs = JSON.parse(JSON.stringify(default_jobs))
+	jobs = removeUnselectedItem(jobs)
+
 	let systems = JSON.parse(JSON.stringify(default_systems))
 	//Using shuffle or static sort
 	// shuffleArray(jobs)
@@ -200,8 +211,6 @@ var start = function(totalSystem){
 			}
 		}
 	}
-
-
 
 	let simulator = function(){
 		// console.log('simulaotr++')
@@ -263,9 +272,8 @@ var start = function(totalSystem){
 var run1000 = function(n)
 {
 	//update current value from HTML
-	update()
+	updateFromHTML()
 	let totalSystem = parseInt(document.getElementsByClassName('total_system')[0].value)
-
 	let minSystem = checkMinimumSystem()
 	if ( totalSystem < minSystem ){
 		alert("You need at least "+minSystem+" to run this RSV test plan")
