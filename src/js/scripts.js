@@ -68,9 +68,8 @@ var updateFromHTML = function(){
 
 
 let default_jobs = []
-initialDefaultTestingItem()
 
-const initialDefaultTestingItem = function(){
+var initialDefaultTestingItem = function(){
 	default_jobs.push(new Job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
 	default_jobs.push(new Job("Torsion Test (50k)", 5,3))
 	default_jobs.push(new Job("System Pogo", 7,3))
@@ -99,6 +98,9 @@ const initialDefaultTestingItem = function(){
 	default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
 	default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
 }
+
+initialDefaultTestingItem()
+
 
 let max_day = job_max_day(default_jobs)
 let html = ''
@@ -134,7 +136,8 @@ document.getElementById('list').innerHTML = html;
 
 
 
-var checkMinimumSystem = function(){
+
+var minimumRequiredSystem = function(){
 	let maxSystemPerTestItem = 0
 	let totalDestoryedSystem = 0
 
@@ -149,9 +152,16 @@ var checkMinimumSystem = function(){
 	return maxSystemPerTestItem + totalDestoryedSystem
 }
 
+var checkMinimumSystem = function(totalSystem, minSystem){
+	if ( totalSystem < minSystem ){
+		alert("You need at least "+minSystem+" to run this RSV test plan")
+		return false
+	}
+	return true
+}
+
 let removeUnselectedItem = function(jobs){
 	for (let i=jobs.length-1; i>=0; i--){ 
-		console.log(jobs[i])
 		if ( jobs[i].select == false){
 			jobs.splice(i,1)
 		}
@@ -159,7 +169,7 @@ let removeUnselectedItem = function(jobs){
 	return jobs
 }
 
-var start = function(totalSystem){
+var simulator = function(totalSystem){
 	// console.log('start++')
 
 	//get number of system from HTML and creat systems
@@ -179,7 +189,7 @@ var start = function(totalSystem){
 		// console.log(jobs[i])
 	}
 	//check if exist a system that still running
-	let running_systems = function(){
+	let isSystemRunning = function(){
 		for (var i in systems){
 			if (systems[i].running){
 				return true
@@ -204,7 +214,7 @@ var start = function(totalSystem){
 	}
 
 	//let all systems run of 1 day
-	let running = function(){
+	let systemRunning = function(){
 		for (let i in systems){
 			if (systems[i].running > 0){
 				systems[i].running--
@@ -212,14 +222,13 @@ var start = function(totalSystem){
 		}
 	}
 
-	let simulator = function(){
+	var startRunning = function(){
 		// console.log('simulaotr++')
 		let best_result =""
 		let day = 0
 		//keep running until all jobs are done and no systems are running for remaining jobs
-		while (jobs.length > 0 || running_systems()){
+		while (jobs.length > 0 || isSystemRunning()){
 			//loop jobs backward
-
 			for (let i = jobs.length-1; i>=0; i--){
 				let job = jobs[i]
 				// console.log(job)
@@ -233,9 +242,7 @@ var start = function(totalSystem){
 						if (job.destoryed){
 							s.available = false
 							s.history.push([job.name+"(D)", job.tier, day, job.day])
-
 						}else {s.history.push([job.name, job.tier, day, job.day])}
-
 					}					
 					// jobs.pop()
 					jobs.splice(i,1)
@@ -244,8 +251,7 @@ var start = function(totalSystem){
 				else { continue }
 			}
 			day++
-			running()
-			
+			systemRunning()
 		}
 		// console.log(day)
 		best_result = JSON.stringify(systems)
@@ -264,54 +270,56 @@ var start = function(totalSystem){
 	    }
 	}
 	return{
-		simulator:simulator,
+		startRunning:startRunning,
 
 
 	}
 }
-var run1000 = function(n)
+
+
+var run = function(n)
 {
 	//update current value from HTML
 	updateFromHTML()
 	let totalSystem = parseInt(document.getElementsByClassName('total_system')[0].value)
-	let minSystem = checkMinimumSystem()
-	if ( totalSystem < minSystem ){
-		alert("You need at least "+minSystem+" to run this RSV test plan")
-		return 0
-	}
-	let resultHTML = ""
+	let minSystem = minimumRequiredSystem()
+	
+	if ( checkMinimumSystem(totalSystem, minSystem) == false ){ return 0}
 
-	let result = start(totalSystem).simulator()
+	let resultHTML = ""
+	let result = simulator(totalSystem).startRunning()
 	let day = result[0]
 	let systems = result[1]
 
 	systems = JSON.parse(systems)
-	output_google_chart_format(systems)
-
 	document.getElementById('running_day').innerHTML = "Need minimum "+day+" days";
+
+	output_google_chart_format(systems)
 	return day
 }
 
 
 var output_google_chart_format = function(systems){
 	let google_chart_data = []
-	for (let i in systems){
-		let system_histories = systems[i].history
-		for (let j in system_histories){
-				let history = system_histories[j]
-				let name = history[0]
-				let tier = history[1]
-				let id = i
-				let ms_to_day = 86400000
-				let start = history[2]*ms_to_day
-				let end = start + history[3]*ms_to_day
+	systems.forEach( function(sys, index) {
+		let system_histories = sys.history
+		console.log(system_histories)
+		system_histories.forEach( (sys_history) => {
+			let history = sys_history
+			let ms_to_day = 86400000
+			let id = index.toString()
+			let name = history[0]
+			let tier = history[1]
+			let start = history[2]*ms_to_day
+			let end = start + history[3]*ms_to_day
 
-				color = tier == 1 ? '#e63b6f' : '#19fce1'
-				google_chart_data.push([id, name, color, start, end])					
-			}
-		}
+			color = tier == 1 ? '#e63b6f' : '#19fce1'
+			google_chart_data.push([id, name, color, start, end])
+		})
+		
+		})
 	output_google_chart(google_chart_data)
-	console.log(google_chart_data)
+	// console.log(google_chart_data)
   }
 
   var output_google_chart = function(chart_data){
