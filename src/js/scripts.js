@@ -22,10 +22,6 @@ class System{
 }
 
 
-
-
-
-
 //update HTML
 var updateFromHTML = function(){
 	let selector = document.getElementsByClassName('selector')
@@ -78,18 +74,21 @@ var initialDefaultTestingItem = function(){
 
 initialDefaultTestingItem()
 
+let html =`
 
-let html = ''
+<table class="table">
+<tbody>
+<tr>
+<td>Name</td>
+<td>Select</td>
+<td>Day</td>
+<td>Unit</td>
+<td>Tier</td>
+<td>Destoryed</td>
+</tr>
 
-html +=`
-<div class="divTableRow">
-    <div class="divTableCell">Name</div>
-    <div class="divTableCell">Select</div>
-    <div class="divTableCell">Day</div>
-    <div class="divTableCell">Unit</div>
-    <div class="divTableCell">Tier</div>
-    <div class="divTableCell">Destoryed</div>
-  </div>
+
+
 `
 //generate table HTML output
 for (let i in default_jobs){
@@ -98,15 +97,20 @@ for (let i in default_jobs){
 	html+=
 	`
 	<div class="divTableRow" id=`+ i +`>
-	    <div class="divTableCell">`+ default_jobs[i].name +`</div>
-	    <div class="divTableCell"><input class='selector' type="checkbox" name="select" `+ selectHTML +`></div>
-	    <div class="divTableCell"><input class='day' type="text" name="day" size=3 value=`+ default_jobs[i].day+`></div>
-	    <div class="divTableCell"><input class='unit' type="text" name="unit" size =3 value=`+ default_jobs[i].unit +`></div>
-	   	<div class="divTableCell"><input class='tier' type="text" name="tier" size =3 value=`+ default_jobs[i].tier +`></div>
-	    <div class="divTableCell"><input class='destoryed' type="checkbox" name="firstname " `+ destoryedHTML +` ></div>
+		<tr>
+	    <td>`+ default_jobs[i].name +`</td>
+	    <td><input class='selector' type="checkbox" name="select" `+ selectHTML +`></td>
+	    <td><input class='day' type="text" name="day" size=3 value=`+ default_jobs[i].day+`></td>
+	    <td><input class='unit' type="text" name="unit" size =3 value=`+ default_jobs[i].unit +`></td>
+	   	<td><input class='tier' type="text" name="tier" size =3 value=`+ default_jobs[i].tier +`></td>
+	    <td><input class='destoryed' type="checkbox" name="firstname " `+ destoryedHTML +` ></div>
+	    </tr>
 	  </div>
 	  `
 }
+
+html += '</tbody></table>'
+
 
 document.getElementById('list').innerHTML = html;
 
