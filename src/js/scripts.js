@@ -77,37 +77,40 @@ initialDefaultTestingItem()
 let html =`
 
 <table class="table">
-<tbody>
+<thead class="thead-dark">
 <tr>
-<td>Name</td>
-<td>Select</td>
-<td>Day</td>
-<td>Unit</td>
-<td>Tier</td>
-<td>Destoryed</td>
+<th scope="col">ID</th>
+<th scope="col">Name</th>
+<th scope="col">Select</th>
+<th scope="col">Day</th>
+<th scope="col">Unit</th>
+<th scope="col">Tier</th>
+<th scope="col">Destoryed</th>
 </tr>
+</thead>
+<tbody>
 
 
 
 `
 //generate table HTML output
-for (let i in default_jobs){
-	let destoryedHTML = default_jobs[i].destoryed ? "checked" :""
-	let selectHTML = default_jobs[i].select ? "checked" :""
+default_jobs.forEach((default_job, i) =>{
+	let destoryedHTML = default_job.destoryed ? "checked" :""
+	let selectHTML = default_job.select ? "checked" :""
+	let rowIndex = i+1
 	html+=
 	`
-	<div class="divTableRow" id=`+ i +`>
 		<tr>
-	    <td>`+ default_jobs[i].name +`</td>
-	    <td><input class='selector' type="checkbox" name="select" `+ selectHTML +`></td>
-	    <td><input class='day' type="text" name="day" size=3 value=`+ default_jobs[i].day+`></td>
-	    <td><input class='unit' type="text" name="unit" size =3 value=`+ default_jobs[i].unit +`></td>
-	   	<td><input class='tier' type="text" name="tier" size =3 value=`+ default_jobs[i].tier +`></td>
-	    <td><input class='destoryed' type="checkbox" name="firstname " `+ destoryedHTML +` ></div>
+		<th scope="row">${rowIndex}</th>
+	    <td> ${default_job.name} </td>
+	    <td><input class='selector' type="checkbox" name="select"  ${selectHTML} ></td>
+	    <td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
+	    <td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
+	   	<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
+	    <td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
 	    </tr>
-	  </div>
 	  `
-}
+})
 
 html += '</tbody></table>'
 
@@ -333,7 +336,10 @@ var output_google_chart_format = function(systems){
 	    dataTable.addColumn({ type: 'number', id: 'Start' });
 	    dataTable.addColumn({ type: 'number', id: 'End' });
 	    dataTable.addRows(chart_data);
-	    
+	    let options = {
+
+	    }
+
 	    //customize bar shape+
 		var observer = new MutationObserver(setBorderRadius);
 		  google.visualization.events.addListener(chart, 'ready', function () {
@@ -356,6 +362,6 @@ var output_google_chart_format = function(systems){
 
 
 		
-	    chart.draw(dataTable)
+	    chart.draw(dataTable, options)
   }
 }
