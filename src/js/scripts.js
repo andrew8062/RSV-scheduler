@@ -22,60 +22,43 @@ class System{
 }
 
 
-//update HTML
-var updateFromHTML = function(){
-	let selector = document.getElementsByClassName('selector')
-	let day = document.getElementsByClassName('day')
-	let unit = document.getElementsByClassName('unit')
-	let tier = document.getElementsByClassName('tier')
-	let destoryed = document.getElementsByClassName('destoryed')
-
-	for (let i in default_jobs){
-		default_jobs[i].select = selector[i].checked
-		default_jobs[i].day = parseInt(day[i].value)
-		default_jobs[i].unit = parseInt(unit[i].value)
-		default_jobs[i].tier = parseInt(tier[i].value)
-		default_jobs[i].destoryed = destoryed[i].checked
-	}
-}
 
 
-let default_jobs = []
 
-var initialDefaultTestingItem = function(){
-	default_jobs.push(new Job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
-	default_jobs.push(new Job("Torsion Test (50k)", 5,3))
-	default_jobs.push(new Job("System Pogo", 7,3))
-	default_jobs.push(new Job("Weighted Shock Test", 1,2))
-	default_jobs.push(new Job("Edu Durability Test", 10,5, 1, true))
-	default_jobs.push(new Job("Free Fall Drop", 3,3, 1, true))
-	default_jobs.push(new Job("Temperature/Voltage Margining Test", 10,2, 2, true))
-	default_jobs.push(new Job("Wrenching Test", 7,4))
-	default_jobs.push(new Job("Buffing", 1,2))
-	default_jobs.push(new Job("LCD Wobble", 1,2))
-	default_jobs.push(new Job("LCD POGO", 5,3))
-	default_jobs.push(new Job("Palmrest POGO", 5,3))
-	default_jobs.push(new Job("Button Cycling", 6,3))
-	default_jobs.push(new Job("Module Cycling", 6,4))
-	default_jobs.push(new Job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
-	default_jobs.push(new Job("Thermal Shock", 5,5, 1, true))
-	default_jobs.push(new Job("Liquid Spill Test", 5,5, 1, true))
-	default_jobs.push(new Job("Hinge Cycling Test", 5,5))
-	default_jobs.push(new Job("Random Vibration", 2,2, 1, true))
-	default_jobs.push(new Job("Half-Sine Shock", 2,2,1, true))
-	default_jobs.push(new Job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
-	default_jobs.push(new Job("Palm Rest Vibration",1,2))
-	default_jobs.push(new Job("Hinge Cycle Abrasion", 12,2,2))
-	default_jobs.push(new Job("Durability A Group", 5,4, 1,true))
-	default_jobs.push(new Job("Durability B Group", 5,4, 1,true))
-	default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
-	default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
-}
 
-initialDefaultTestingItem()
+
+
+
+var default_jobs = []
+default_jobs.push(new Job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
+default_jobs.push(new Job("Torsion Test (50k)", 5,3))
+default_jobs.push(new Job("System Pogo", 7,3))
+default_jobs.push(new Job("Weighted Shock Test", 1,2))
+default_jobs.push(new Job("Edu Durability Test", 10,5, 1, true))
+default_jobs.push(new Job("Free Fall Drop", 3,3, 1, true))
+default_jobs.push(new Job("Temperature/Voltage Margining Test", 10,2, 2, true))
+default_jobs.push(new Job("Wrenching Test", 7,4))
+default_jobs.push(new Job("Buffing", 1,2))
+default_jobs.push(new Job("LCD Wobble", 1,2))
+default_jobs.push(new Job("LCD POGO", 5,3))
+default_jobs.push(new Job("Palmrest POGO", 5,3))
+default_jobs.push(new Job("Button Cycling", 6,3))
+default_jobs.push(new Job("Module Cycling", 6,4))
+default_jobs.push(new Job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
+default_jobs.push(new Job("Thermal Shock", 5,5, 1, true))
+default_jobs.push(new Job("Liquid Spill Test", 5,5, 1, true))
+default_jobs.push(new Job("Hinge Cycling Test", 5,5))
+default_jobs.push(new Job("Random Vibration", 2,2, 1, true))
+default_jobs.push(new Job("Half-Sine Shock", 2,2,1, true))
+default_jobs.push(new Job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
+default_jobs.push(new Job("Palm Rest Vibration",1,2))
+default_jobs.push(new Job("Hinge Cycle Abrasion", 12,2,2))
+default_jobs.push(new Job("Durability A Group", 5,4, 1,true))
+default_jobs.push(new Job("Durability B Group", 5,4, 1,true))
+default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
+default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
 
 let html =`
-
 <table class="table">
 <thead class="thead-dark">
 <tr>
@@ -89,9 +72,6 @@ let html =`
 </tr>
 </thead>
 <tbody>
-
-
-
 `
 //generate table HTML output
 default_jobs.forEach((default_job, i) =>{
@@ -113,12 +93,27 @@ default_jobs.forEach((default_job, i) =>{
 })
 
 html += '</tbody></table>'
-
-
 document.getElementById('list').innerHTML = html;
 
 
 
+
+//update HTML
+var updateFromHTML = function(){
+	let selector = document.getElementsByClassName('selector')
+	let day = document.getElementsByClassName('day')
+	let unit = document.getElementsByClassName('unit')
+	let tier = document.getElementsByClassName('tier')
+	let destoryed = document.getElementsByClassName('destoryed')
+
+	for (let i in default_jobs){
+		default_jobs[i].select = selector[i].checked
+		default_jobs[i].day = parseInt(day[i].value)
+		default_jobs[i].unit = parseInt(unit[i].value)
+		default_jobs[i].tier = parseInt(tier[i].value)
+		default_jobs[i].destoryed = destoryed[i].checked
+	}
+}
 
 var minimumRequiredSystem = function(){
 	let maxSystemPerTestItem = 0
@@ -147,15 +142,7 @@ var checkMinimumSystem = function(totalSystem, minSystem){
 
 var simulator = function(totalSystem){
 	// console.log('start++')
-	let removeUnselectedItem = function(jobs){
-	for (let i=jobs.length-1; i>=0; i--){ 
-		if ( jobs[i].select == false){
-			jobs.splice(i,1)
-		}
-	}
-	return jobs
-	}
-
+	
 	//get number of system from HTML and creat systems
 	let default_systems = []
 	for (var i = 0; i<totalSystem; i++){
@@ -169,9 +156,16 @@ var simulator = function(totalSystem){
 	//Using shuffle or static sort
 	// shuffleArray(jobs)
 	jobs.sort(compare)
-	for (let i in jobs){
-		// console.log(jobs[i])
+
+	function removeUnselectedItem(jobs){
+	for (let i=jobs.length-1; i>=0; i--){ 
+		if ( jobs[i].select == false){
+			jobs.splice(i,1)
+		}
 	}
+	return jobs
+	}
+
 	//check if exist a system that still running
 	let isSystemRunning = function(){
 		for (var i in systems){
@@ -217,7 +211,7 @@ var simulator = function(totalSystem){
 	let systemRunning = function(){
 		for (let i in systems){
 			if (systems[i].running > 0){
-				systems[i].running--
+				systems[i].running -= 1
 			}
 		}
 	}
@@ -257,22 +251,9 @@ var simulator = function(totalSystem){
 		best_result = JSON.stringify(systems)
 		return [day, best_result]
 	}
-	/**
-	 * Randomize array element order in-place.
-	 * Using Durstenfeld shuffle algorithm.
-	 */
-	function shuffleArray(array) {
-	    for (let i = array.length - 1; i > 0; i--) {
-	        let j = Math.floor(Math.random() * (i + 1));
-	        let temp = array[i];
-	        array[i] = array[j];
-	        array[j] = temp;
-	    }
-	}
+
 	return{
 		startRunning,
-
-
 	}
 }
 
