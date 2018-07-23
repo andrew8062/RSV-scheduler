@@ -1,12 +1,12 @@
 
 class Job {
-  constructor(name, day, unit, tier=1, destoryed=false) {
-	this.name = name
-	this.day = day
-	this.unit = unit
-	this.destoryed = destoryed
-	this.tier = tier
-	this.select = true
+	constructor(name, day, unit, tier=1, destoryed=false) {
+		this.name = name
+		this.day = day
+		this.unit = unit
+		this.destoryed = destoryed
+		this.tier = tier
+		this.select = true
 	}
 	info(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
@@ -20,10 +20,6 @@ class System{
 		this.history = []
 	}
 }
-
-
-
-
 
 
 
@@ -80,16 +76,16 @@ default_jobs.forEach((default_job, i) =>{
 	let rowIndex = i+1
 	html+=
 	`
-		<tr>
-		<th scope="row">${rowIndex}</th>
-	    <td> ${default_job.name} </td>
-	    <td><input class='selector' type="checkbox" name="select"  ${selectHTML} ></td>
-	    <td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
-	    <td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
-	   	<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
-	    <td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
-	    </tr>
-	  `
+	<tr>
+	<th scope="row">${rowIndex}</th>
+	<td> ${default_job.name} </td>
+	<td><input class='selector' type="checkbox" name="select"  ${selectHTML} ></td>
+	<td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
+	<td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
+	<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
+	<td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
+	</tr>
+	`
 })
 
 html += '</tbody></table>'
@@ -158,12 +154,12 @@ var simulator = function(totalSystem){
 	jobs.sort(compare)
 
 	function removeUnselectedItem(jobs){
-	for (let i=jobs.length-1; i>=0; i--){ 
-		if ( jobs[i].select == false){
-			jobs.splice(i,1)
+		for (let i=jobs.length-1; i>=0; i--){ 
+			if ( jobs[i].select == false){
+				jobs.splice(i,1)
+			}
 		}
-	}
-	return jobs
+		return jobs
 	}
 
 	//check if exist a system that still running
@@ -179,18 +175,18 @@ var simulator = function(totalSystem){
 	function compare(a,b){
 
 		if (a.tier > b.tier) { return -1}
-		if (a.tier < b.tier) {return 1}
+			if (a.tier < b.tier) {return 1}
 
-		if(a.destoryed && !b.destoryed) {return -1}
-		if(!a.destoryed && b.destoryed) {return 1}		
+				if(a.destoryed && !b.destoryed) {return -1}
+					if(!a.destoryed && b.destoryed) {return 1}		
 
-		if (a.day > b.day) { return 1}
-		if (a.day < b.day) { return -1}
+						if (a.day > b.day) { return 1}
+							if (a.day < b.day) { return -1}
 
-		if(a.unit > b.unit) {return 1}
-		if(a.unit < b.unit) {return -1}	
-		return 0;
-	}
+								if(a.unit > b.unit) {return 1}
+									if(a.unit < b.unit) {return -1}	
+										return 0;
+								}
 
 	//find minmim of n number of available systems
 	let find_empty_system = function(num=1){
@@ -244,9 +240,9 @@ var simulator = function(totalSystem){
 				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
 				else { continue }
 			}
-			day++
-			systemRunning()
-		}
+		day++
+		systemRunning()
+	}
 		// console.log(day)
 		best_result = JSON.stringify(systems)
 		return [day, best_result]
@@ -267,7 +263,7 @@ var run = function(n)
 	
 	if ( checkMinimumSystem(totalSystem, minSystem) == false ){ return 0}
 
-	let resultHTML = ""
+		let resultHTML = ""
 	let result = simulator(totalSystem).startRunning()
 	let day = result[0]
 	let systems = result[1]
@@ -284,7 +280,6 @@ var output_google_chart_format = function(systems){
 	let google_chart_data = []
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
-		console.log(system_histories)
 		system_histories.forEach( (sys_history) => {
 			let history = sys_history
 			let ms_to_day = 86400000
@@ -298,51 +293,52 @@ var output_google_chart_format = function(systems){
 			google_chart_data.push([id, name, color, start, end])
 		})
 		
-		})
+	})
+	console.log(google_chart_data)
 	output_google_chart(google_chart_data)
 	// console.log(google_chart_data)
-  }
+}
 
-  var output_google_chart = function(chart_data){
-  	google.charts.load("current", {packages:["timeline"]});
-  	google.charts.setOnLoadCallback(drawChart);
-  	function drawChart() {
-	    let  container = document.getElementById('waterfall');
-	    let  chart = new google.visualization.Timeline(container);
-	    let dataTable = new google.visualization.DataTable();
+var output_google_chart = function(chart_data){
+	google.charts.load("current", {packages:["timeline"]});
+	google.charts.setOnLoadCallback(drawChart);
+	function drawChart() {
+		let  container = document.getElementById('waterfall');
+		let  chart = new google.visualization.Timeline(container);
+		let dataTable = new google.visualization.DataTable();
 
-	    dataTable.addColumn({ type: 'string', id: 'Term' });
-	    dataTable.addColumn({ type: 'string', id: 'Name' });
+		dataTable.addColumn({ type: 'string', id: 'Term' });
+		dataTable.addColumn({ type: 'string', id: 'Name' });
 		dataTable.addColumn({ type: 'string', role: 'style'});
-	    dataTable.addColumn({ type: 'number', id: 'Start' });
-	    dataTable.addColumn({ type: 'number', id: 'End' });
-	    dataTable.addRows(chart_data);
-	    let options = {
+		dataTable.addColumn({ type: 'number', id: 'Start' });
+		dataTable.addColumn({ type: 'number', id: 'End' });
+		dataTable.addRows(chart_data);
+		let options = {
 
-	    }
+		}
 
 	    //customize bar shape+
-		var observer = new MutationObserver(setBorderRadius);
-		  google.visualization.events.addListener(chart, 'ready', function () {
-		    setBorderRadius();
-		    observer.observe(container, {
-		      childList: true,
-		      subtree: true
-		    });
-		  });
+	    var observer = new MutationObserver(setBorderRadius);
+	    google.visualization.events.addListener(chart, 'ready', function () {
+	    	setBorderRadius();
+	    	observer.observe(container, {
+	    		childList: true,
+	    		subtree: true
+	    	});
+	    });
 
-		  function setBorderRadius() {
-		    Array.prototype.forEach.call(container.getElementsByTagName('rect'), function (rect) {
-		      if (parseFloat(rect.getAttribute('x')) > 0) {
-		        rect.setAttribute('rx', 20);
-		        rect.setAttribute('ry', 20);
-		      }
-		    });
-		  }
+	    function setBorderRadius() {
+	    	Array.prototype.forEach.call(container.getElementsByTagName('rect'), function (rect) {
+	    		if (parseFloat(rect.getAttribute('x')) > 0) {
+	    			rect.setAttribute('rx', 20);
+	    			rect.setAttribute('ry', 20);
+	    		}
+	    	});
+	    }
 	    //customize bar shape-
 
 
-		
+
 	    chart.draw(dataTable, options)
-  }
+	}
 }
