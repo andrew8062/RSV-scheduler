@@ -231,8 +231,8 @@ var simulator = function(totalSystem){
 						//if the job will damage system, system will be marked as not avaiable
 						if (job.destoryed){
 							s.available = false
-							s.history.push([job.name+"(D)", job.tier, day, job.day])
-						}else {s.history.push([job.name, job.tier, day, job.day])}
+							s.history.push([job.name+" ( "+job.day+" days ) (D)", job.tier, day, job.day])
+						}else {s.history.push([job.name+" ( "+job.day+" days )", job.tier, day, job.day])}
 					}					
 					// jobs.pop()
 					jobs.splice(i,1)
@@ -271,15 +271,15 @@ var run = function(n)
 	systems = JSON.parse(systems)
 	document.getElementById('running_day').innerHTML = "Need minimum "+day+" days";
 
-	let hot = output_google_chart_format(systems)
+	let hot = generateHandsontable(systems)
 	return hot
 }
 
 
 
 
-var output_google_chart_format = function(systems){
-	google_chart_data = []
+var generateHandsontable = function(systems){
+	testDataSource = []
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
@@ -291,21 +291,26 @@ var output_google_chart_format = function(systems){
 			let start = history[2]
 			let duration = history[3]
 
-			color = tier == 1 ? '#e63b6f' : '#19fce1'
-			google_chart_data.push([id, name, start, duration])
+			color = tier == 1 ? '#4da888' : '#c4b93c'
+			testDataSource.push([id, name, start, duration, color])
 		})
 		
 	})
-	console.log(google_chart_data)
-	handsontableSourceData = generateHandsontableFormat(systems.length, google_chart_data)
-	console.log(handsontableSourceData)
-	let hot = generateHandsontable(handsontableSourceData.sourceData, handsontableSourceData.mergeCells)
+	console.log(testDataSource)
+	handsontableSourceData = drawHandsontableFormat(systems.length, testDataSource)
+	let hot = drawHandsontable(handsontableSourceData.sourceData, handsontableSourceData.mergeCells)
+	
+	testDataSource.forEach( (test) => {
+
+		hot.getCell(test[0], test[2]).style.backgroundColor = "RED"
+	})
 	return hot
+
 	// output_google_chart(google_chart_data)
 	// console.log(google_chart_data)
 }
 
-function generateHandsontableFormat(rows, sourceData){
+function drawHandsontableFormat(rows, sourceData){
 	let _rows = []
 	let mergeCells = []
 	let sourceDataIndex = 0
@@ -332,15 +337,17 @@ function generateHandsontableFormat(rows, sourceData){
 
 }
 
-function generateHandsontable(sourceData, mergeCells){
+function drawHandsontable(sourceData, mergeCells){
 	let container = document.getElementById('waterfall')
  	
- 	var hot = new Handsontable(container, {
+ 	let hot = new Handsontable(container, {
  		data:sourceData,
  		
  		mergeCells: mergeCells,
  		rowHeaders: true,
 		colHeaders: true,
+		autoColumnSize:true,
+
 
 	})
 	hot.render()
