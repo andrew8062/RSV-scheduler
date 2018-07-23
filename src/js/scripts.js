@@ -59,8 +59,8 @@ default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
 default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
 
 let html =`
-<table class="table">
-<thead class="thead-dark">
+<table class="table table-striped table-hover">
+<thead class="thead-dark ">
 <tr>
 <th scope="col">ID</th>
 <th scope="col">Name</th>
