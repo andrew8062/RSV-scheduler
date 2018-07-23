@@ -174,19 +174,19 @@ var simulator = function(totalSystem){
 	
 	function compare(a,b){
 
-		if (a.tier > b.tier) { return -1}
-			if (a.tier < b.tier) {return 1}
+	if (a.tier > b.tier) { return -1}
+	if (a.tier < b.tier) {return 1}
 
-				if(a.destoryed && !b.destoryed) {return -1}
-					if(!a.destoryed && b.destoryed) {return 1}		
+	if(a.destoryed && !b.destoryed) {return -1}
+	if(!a.destoryed && b.destoryed) {return 1}		
 
-						if (a.day > b.day) { return 1}
-							if (a.day < b.day) { return -1}
+	if (a.day > b.day) { return 1}
+	if (a.day < b.day) { return -1}
 
-								if(a.unit > b.unit) {return 1}
-									if(a.unit < b.unit) {return -1}	
-										return 0;
-								}
+	if(a.unit > b.unit) {return 1}
+	if(a.unit < b.unit) {return -1}	
+	return 0;
+	}
 
 	//find minmim of n number of available systems
 	let find_empty_system = function(num=1){
@@ -271,8 +271,8 @@ var run = function(n)
 	systems = JSON.parse(systems)
 	document.getElementById('running_day').innerHTML = "Need minimum "+day+" days";
 
-	output_google_chart_format(systems)
-	return day
+	let hot = output_google_chart_format(systems)
+	return hot
 }
 
 
@@ -289,45 +289,62 @@ var output_google_chart_format = function(systems){
 			let name = history[0]
 			let tier = history[1]
 			let start = history[2]
-			let end = start + history[3]
+			let duration = history[3]
 
 			color = tier == 1 ? '#e63b6f' : '#19fce1'
-			google_chart_data.push([id, name, start, end])
+			google_chart_data.push([id, name, start, duration])
 		})
 		
 	})
 	console.log(google_chart_data)
-	let handsontableDataSource = generateHandsontableFormat(systems.length, google_chart_data)
-	generateHandsontable(handsontableDataSource)
+	handsontableSourceData = generateHandsontableFormat(systems.length, google_chart_data)
+	console.log(handsontableSourceData)
+	let hot = generateHandsontable(handsontableSourceData.sourceData, handsontableSourceData.mergeCells)
+	return hot
 	// output_google_chart(google_chart_data)
 	// console.log(google_chart_data)
 }
 
 function generateHandsontableFormat(rows, sourceData){
 	let _rows = []
+	let mergeCells = []
 	let sourceDataIndex = 0
 	for (let i = 0; i < rows; i++) {
 		_rows.push([])
 	}
 	for(let j = 0; j<sourceData.length; j++){
-			let row = sourceData[j][0]
-			let name = sourceData[j][1]
-			let start = sourceData[j][2]
-			let end = sourceData[j][3]
-			_rows[row][start] = name
-			_rows[row][end] = name
+		let row = sourceData[j][0]
+		let name = sourceData[j][1]
+		let start = sourceData[j][2]
+		let duration = sourceData[j][3]
+		let end = start + duration
+		_rows[row][start] = name
+		
+		//little hack, it needs to have a string in the end of cell so handsontable will crate the table till it
+		//otherwise it will end without showing last item test duration
+		_rows[row][end] = " "
+
+		if(duration > 1){
+			mergeCells.push({row: row, col:start, rowspan: 1, colspan: duration})
+		}
 	}
-	return _rows
+	return { sourceData: _rows, mergeCells: mergeCells}
 
 }
 
-function generateHandsontable(sourceData){
+function generateHandsontable(sourceData, mergeCells){
 	let container = document.getElementById('waterfall')
- 	let hot;
- 	hot = new Handsontable(container, {
- 		data:sourceData
+ 	
+ 	var hot = new Handsontable(container, {
+ 		data:sourceData,
+ 		
+ 		mergeCells: mergeCells,
+ 		rowHeaders: true,
+		colHeaders: true,
+
 	})
 	hot.render()
+	return hot
 }
 
 var output_google_chart = function(chart_data){
