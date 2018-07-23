@@ -276,27 +276,58 @@ var run = function(n)
 }
 
 
+
+
 var output_google_chart_format = function(systems){
-	let google_chart_data = []
+	google_chart_data = []
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
 			let history = sys_history
 			let ms_to_day = 86400000
-			let id = index.toString()
+			let id = index
 			let name = history[0]
 			let tier = history[1]
-			let start = history[2]*ms_to_day
-			let end = start + history[3]*ms_to_day
+			let start = history[2]
+			let end = start + history[3]
 
 			color = tier == 1 ? '#e63b6f' : '#19fce1'
-			google_chart_data.push([id, name, color, start, end])
+			google_chart_data.push([id, name, start, end])
 		})
 		
 	})
 	console.log(google_chart_data)
-	output_google_chart(google_chart_data)
+	let handsontableDataSource = generateHandsontableFormat(systems.length, google_chart_data)
+	generateHandsontable(handsontableDataSource)
+	// output_google_chart(google_chart_data)
 	// console.log(google_chart_data)
+}
+
+function generateHandsontableFormat(rows, sourceData){
+	let _rows = []
+	let sourceDataIndex = 0
+	for (let i = 0; i < rows; i++) {
+		_rows.push([])
+	}
+	for(let j = 0; j<sourceData.length; j++){
+			let row = sourceData[j][0]
+			let name = sourceData[j][1]
+			let start = sourceData[j][2]
+			let end = sourceData[j][3]
+			_rows[row][start] = name
+			_rows[row][end] = name
+	}
+	return _rows
+
+}
+
+function generateHandsontable(sourceData){
+	let container = document.getElementById('waterfall')
+ 	let hot;
+ 	hot = new Handsontable(container, {
+ 		data:sourceData
+	})
+	hot.render()
 }
 
 var output_google_chart = function(chart_data){
