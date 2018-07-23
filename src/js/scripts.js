@@ -231,8 +231,8 @@ var simulator = function(totalSystem){
 						//if the job will damage system, system will be marked as not avaiable
 						if (job.destoryed){
 							s.available = false
-							s.history.push([job.name+" ( "+job.day+" days ) (D)", job.tier, day, job.day])
-						}else {s.history.push([job.name+" ( "+job.day+" days )", job.tier, day, job.day])}
+							s.history.push([job.name+" ( "+job.day+" days ) (D) P"+job.tier, job.tier, day, job.day])
+						}else {s.history.push([job.name+" ( "+job.day+" days ) P"+job.tier, job.tier, day, job.day])}
 					}					
 					// jobs.pop()
 					jobs.splice(i,1)
@@ -300,11 +300,7 @@ var generateHandsontable = function(systems){
 	handsontableSourceData = drawHandsontableFormat(systems.length, testDataSource)
 	let hot = drawHandsontable(handsontableSourceData.sourceData, handsontableSourceData.mergeCells)
 	
-	testDataSource.forEach( (test) => {
-
-		hot.getCell(test[0], test[2]).style.backgroundColor = "RED"
-	})
-	return hot
+	
 
 	// output_google_chart(google_chart_data)
 	// console.log(google_chart_data)
@@ -337,22 +333,53 @@ function drawHandsontableFormat(rows, sourceData){
 
 }
 
+function cellRenderP1(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  // console.log('cell render')
+  // td.style.color = '#4da888';
+  td.style.background = '#4da888';
+}
+function cellRenderP2(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  // console.log('cell render')
+  // td.style.color = '#c4b93c';
+  td.style.background = '#c4b93c';
+}
 function drawHandsontable(sourceData, mergeCells){
 	let container = document.getElementById('waterfall')
  	
  	let hot = new Handsontable(container, {
  		data:sourceData,
- 		
+ 		cells: function (row, col) {
+			let cellProperties = {}
+			let data = this.instance.getData()
+			let cell = data[row][col]
+
+			if (cell != null && cell.includes("P1")){
+				cellProperties.renderer = cellRenderP1
+			}
+			else if (cell != null && cell.includes("P2")){
+				cellProperties.renderer = cellRenderP2
+			}
+			return cellProperties
+		},
  		mergeCells: mergeCells,
  		rowHeaders: true,
 		colHeaders: true,
 		autoColumnSize:true,
 
+		
 
 	})
+	// mergeCells.forEach( (test) => {
+	// 	let cell = hot.getCell(test.row, test.col)
+	// 	cell.style.background = "#4da888"
+	// })
 	hot.render()
 	return hot
 }
+
+
 
 var output_google_chart = function(chart_data){
 	google.charts.load("current", {packages:["timeline"]});
