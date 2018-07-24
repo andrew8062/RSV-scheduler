@@ -257,7 +257,7 @@ var simulator = function(totalSystem){
 var run = function(n){
 	//update current value from HTML
 	updateFromHTML()
-	let totalSystem = parseInt(document.getElementsByClassName('total_system')[0].value)
+	let totalSystem = parseInt(document.getElementById("totalSystem").value)
 	let minSystem = minimumRequiredSystem()
 	
 	if ( checkMinimumSystem(totalSystem, minSystem) == false ){ return 0}

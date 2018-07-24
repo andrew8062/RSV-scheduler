@@ -57,8 +57,12 @@
   <div class="container-fluid">
    <div class="row">
     <div class="col col-lg-12 ">
-      Running System:
-      <input  class="total_system" type="input" name="total_system" size=10 value=55>
+      <div class="input-group mb-3 col-3">
+        <div class="input-group-prepend ">
+          <span class="input-group-text mt-5" id="inputGroup-sizing-default">Number of System</span>
+        </div>
+        <input id="totalSystem" type="text" class="form-control mt-5 " aria-label="Default" aria-describedby="inputGroup-sizing-default" value=55>
+      </div>     
       <div  id="list">
       </div>
       <button onclick="run()" class="btn btn-info">Start</button>
