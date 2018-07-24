@@ -175,18 +175,18 @@ var simulator = function(totalSystem){
 	function compare(a,b){
 
 		if (a.tier > b.tier) { return -1}
-			if (a.tier < b.tier) {return 1}
+		if (a.tier < b.tier) {return 1}
 
-				if(a.destoryed && !b.destoryed) {return -1}
-					if(!a.destoryed && b.destoryed) {return 1}		
+		if(a.destoryed && !b.destoryed) {return -1}
+		if(!a.destoryed && b.destoryed) {return 1}		
 
-						if (a.day > b.day) { return 1}
-							if (a.day < b.day) { return -1}
+		if (a.day > b.day) { return 1}
+		if (a.day < b.day) { return -1}
 
-								if(a.unit > b.unit) {return 1}
-									if(a.unit < b.unit) {return -1}	
-										return 0;
-								}
+		if(a.unit > b.unit) {return 1}
+		if(a.unit < b.unit) {return -1}	
+		return 0;
+	}
 
 	//find minmim of n number of available systems
 	let find_empty_system = function(num=1){
@@ -242,7 +242,7 @@ var simulator = function(totalSystem){
 			}
 		day++
 		systemRunning()
-	}
+		}	
 		// console.log(day)
 		best_result = JSON.stringify(systems)
 		return [day, best_result]
@@ -254,8 +254,7 @@ var simulator = function(totalSystem){
 }
 
 
-var run = function(n)
-{
+var run = function(n){
 	//update current value from HTML
 	updateFromHTML()
 	let totalSystem = parseInt(document.getElementsByClassName('total_system')[0].value)
@@ -270,14 +269,35 @@ var run = function(n)
 
 	systems = JSON.parse(systems)
 	document.getElementById('running_day').innerHTML = "Need minimum "+day+" days";
+	let chartData = outputGoogleChart(systems)
+	csvData = outputCSVsourceData(systems)
+	exportToCSV(csvData);
 
-	output_google_chart_format(systems)
 	return day
 }
 
 
-var output_google_chart_format = function(systems){
-	let google_chart_data = []
+function outputCSVsourceData (systems){
+	let csvSourceData = []
+	csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
+	systems.forEach( function(sys, index) {
+		let system_histories = sys.history
+		system_histories.forEach( (sys_history) => {
+			let history = sys_history
+			let id = index
+			let name = history[0]
+			let tier = history[1]
+			let start = history[2]
+			let end = start + history[3]
+			csvSourceData.push([id, name, tier, start, end])
+		})
+		
+	})
+	return csvSourceData
+	// console.log(google_chart_data)
+}
+function outputGoogleChartFormat(systems){
+	let chartData = []
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
@@ -290,16 +310,19 @@ var output_google_chart_format = function(systems){
 			let end = start + history[3]*ms_to_day
 
 			color = tier == 1 ? '#e63b6f' : '#19fce1'
-			google_chart_data.push([id, name, color, start, end])
+			chartData.push([id, name, color, start, end])
 		})
 		
 	})
-	console.log(google_chart_data)
-	output_google_chart(google_chart_data)
+	console.log(chartData)
+	return chartData
 	// console.log(google_chart_data)
 }
 
-var output_google_chart = function(chart_data){
+function outputGoogleChart(systems){
+
+	chartData = outputGoogleChartFormat(systems)
+
 	google.charts.load("current", {packages:["timeline"]});
 	google.charts.setOnLoadCallback(drawChart);
 	function drawChart() {
@@ -312,7 +335,7 @@ var output_google_chart = function(chart_data){
 		dataTable.addColumn({ type: 'string', role: 'style'});
 		dataTable.addColumn({ type: 'number', id: 'Start' });
 		dataTable.addColumn({ type: 'number', id: 'End' });
-		dataTable.addRows(chart_data);
+		dataTable.addRows(chartData);
 		let options = {
 
 		}
@@ -341,4 +364,25 @@ var output_google_chart = function(chart_data){
 
 	    chart.draw(dataTable, options)
 	}
+	return chartData
+}
+
+function exportToCSV(sourceData){
+	console.log('export to CSV')
+	let csvContent = "data:text/csv;charset=utf-8,";
+	sourceData.forEach(function(rowArray){
+	   let row = rowArray.join(",");
+	   csvContent += row + "\r\n";
+	}); 
+	let encodedUri = encodeURI(csvContent);
+	let link = document.getElementById('export')
+	link.setAttribute("href", encodedUri);
+	link.setAttribute("download", "my_data.csv");
+	link.setAttribute("class", "btn btn-info")
+	link.innerHTML= "Click Here to download";
+	// button.appendChild(link)
+	// document.body.appendChild(link); // Required for FF
+
+	// link.click(); // This will download the data file named "my_data.csv".
+
 }
