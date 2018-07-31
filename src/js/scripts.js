@@ -279,7 +279,7 @@ var run = function(n){
 
 function outputCSVsourceData (systems){
 	let csvSourceData = []
-	csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
+	// csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
@@ -289,10 +289,17 @@ function outputCSVsourceData (systems){
 			let tier = history[1]
 			let start = history[2]
 			let end = start + history[3]
-			csvSourceData.push([id, name, tier, start, end])
+			// csvSourceData.push([id, name, tier, start, end])
+			if (csvSourceData[id] == undefined){
+				csvSourceData[id] = []
+			}
+			for (let i=start; i<end; i++){
+				csvSourceData[id][i] = name
+			}
 		})
 		
 	})
+	console.log(csvSourceData)
 	return csvSourceData
 	// console.log(google_chart_data)
 }
