@@ -279,7 +279,7 @@ var run = function(n){
 
 function outputCSVsourceData (systems){
 	let csvSourceData = []
-	// csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
+	csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
 	systems.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
@@ -289,17 +289,10 @@ function outputCSVsourceData (systems){
 			let tier = history[1]
 			let start = history[2]
 			let end = start + history[3]
-			// csvSourceData.push([id, name, tier, start, end])
-			if (csvSourceData[id] == undefined){
-				csvSourceData[id] = []
-			}
-			for (let i=start; i<end; i++){
-				csvSourceData[id][i] = name
-			}
+			csvSourceData.push([id, name, tier, start, end])
 		})
 		
 	})
-	console.log(csvSourceData)
 	return csvSourceData
 	// console.log(google_chart_data)
 }
@@ -328,8 +321,9 @@ function outputGoogleChartFormat(systems){
 
 function outputGoogleChart(systems){
 
-	chartData = outputGoogleChartFormat(systems)
 
+
+	chartData = outputGoogleChartFormat(systems)
 	google.charts.load("current", {packages:["timeline"]});
 	google.charts.setOnLoadCallback(drawChart);
 	function drawChart() {
@@ -350,11 +344,16 @@ function outputGoogleChart(systems){
 	    //customize bar shape+
 	    var observer = new MutationObserver(setBorderRadius);
 	    google.visualization.events.addListener(chart, 'ready', function () {
+	    	var svg = jQuery('#waterfall svg');
+			svg.attr("xmlns", "http://www.w3.org/2000/svg");
+			svg.css('overflow','visible')
+
 	    	setBorderRadius();
 	    	observer.observe(container, {
 	    		childList: true,
 	    		subtree: true
 	    	});
+
 	    });
 
 	    function setBorderRadius() {
@@ -366,11 +365,19 @@ function outputGoogleChart(systems){
 	    	});
 	    }
 	    //customize bar shape-
-
-
-
 	    chart.draw(dataTable, options)
 	}
+	<!-- @cloudformatter calls to render the SVG -->
+	    
+	<!-- Convert the SVG to PDF and download it -->
+	var click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'download', srctype:'svg'})";
+	jQuery('#buttons').append('<button onclick="'+ click +'">PDF</button>');
+	<!-- Convert the SVG to PNG@120dpi and open it -->
+	click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/png', resolution:'120', srctype:'svg'})";
+	jQuery('#buttons').append('<button onclick="'+ click +'">PNG @120dpi</button>');
+	<!-- Convert the SVG to JPG@300dpi and open it -->
+	click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/jpg', resolution:'300', srctype:'svg'})";
+	jQuery('#buttons').append('<button onclick="'+ click +'">JPG @300dpi</button>');
 	return chartData
 }
 
