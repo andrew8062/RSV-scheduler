@@ -7,6 +7,7 @@ class Job {
 		this.destoryed = destoryed
 		this.tier = tier
 		this.select = true
+		this.wait;
 	}
 	info(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
@@ -157,7 +158,7 @@ class Systems{
 	}
 
 	//find minmim of n number of available systems
-	find_empty_system(num=1){
+	find_empty_system(num=1, name){
 		let available = []
 		this.list.forEach(system=>{
 			if (system.running == 0 && system.available){
@@ -167,7 +168,11 @@ class Systems{
 		if (available.length <　num){
 			return false
 		}
-		return available.slice(0,num)
+		let returnSystems = available.slice(0,num)
+		returnSystems.forEach( sys=>{
+			sys.wait = name
+		})
+		return returnSystems
 	}
 	running (){
 		this.list.forEach( system => {
@@ -178,9 +183,30 @@ class Systems{
 	}
 }
 
+class Rules{
+	constructor(){
+		this.list = []
+	}
+	addRule(criteria){
+		this.list.push(criteria)
+	}
 
+	checkRuleExist(name){
+		let found = false
+		this.list.forEach( criteria=> {
+			if (criteria.indexOf(name) == 0){
+				criteria.splice(0,1)
+				found = true
+			}
+		})
+		return found
+	}
+
+}
 
 let systems = new Systems()
+let rules = new Rules()
+rules.addRule(['Temperature/Humidity Test Non Operational', 'System Foot Abrasion'])
 
 let jobs = new Jobs()
 jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,true)
@@ -247,9 +273,14 @@ var simulator = function(totalSystem){
 			//loop jobs backward
 			for (let i = jobs.getSize()-1; i>=0; i--){
 				let job = jobs.get(i)
-				// console.log(job)
 				//get empty systems
-				let available_systems = systems.find_empty_system(job.unit)
+				if (rules.checkRuleExist(job.name)){
+					let available_systems = systems.find_empty_system(job.unit, job.name)
+
+				}else{
+					let available_systems = systems.find_empty_system(job.unit)
+
+				}
 				if (available_systems){
 					for (let j in available_systems){
 						s = available_systems[j]
@@ -420,9 +451,5 @@ function exportToCSV(sourceData){
 	link.setAttribute("download", "my_data.csv");
 	link.setAttribute("class", "btn btn-info")
 	link.innerHTML= "Click Here to download";
-	// button.appendChild(link)
-	// document.body.appendChild(link); // Required for FF
-
-	// link.click(); // This will download the data file named "my_data.csv".
 
 }
