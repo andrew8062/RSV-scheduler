@@ -10,169 +10,107 @@ class Job {
 	}
 	info(){
 		return 'name: ' + this.name + ' day: '+this.day + ' unit '+this.unit + ' destoryed: '+this.destoryed + ' tier: ' + this.tier
-	}  
+	} 
 }
-class System{
-	constructor(id, running, available){
-		this.id = id
-		this.running = running
-		this.available = available
-		this.history = []
+class Jobs{
+	constructor(){
+		this.list = []
 	}
-}
 
-
-
-
-
-var default_jobs = []
-default_jobs.push(new Job("Temperature/Humidity Test Non Operational", 7,9, 1,true))
-default_jobs.push(new Job("Torsion Test (50k)", 5,3))
-default_jobs.push(new Job("System Pogo", 7,3))
-default_jobs.push(new Job("Weighted Shock Test", 1,2))
-default_jobs.push(new Job("Edu Durability Test", 10,5, 1, true))
-default_jobs.push(new Job("Free Fall Drop", 3,3, 1, true))
-default_jobs.push(new Job("Temperature/Voltage Margining Test", 10,2, 2, true))
-default_jobs.push(new Job("Wrenching Test", 7,4))
-default_jobs.push(new Job("Buffing", 1,2))
-default_jobs.push(new Job("LCD Wobble", 1,2))
-default_jobs.push(new Job("LCD POGO", 5,3))
-default_jobs.push(new Job("Palmrest POGO", 5,3))
-default_jobs.push(new Job("Button Cycling", 6,3))
-default_jobs.push(new Job("Module Cycling", 6,4))
-default_jobs.push(new Job("Power Button+ Finger Print Reader Combo Test", 10, 4, 2))
-default_jobs.push(new Job("Thermal Shock", 5,5, 1, true))
-default_jobs.push(new Job("Liquid Spill Test", 5,5, 1, true))
-default_jobs.push(new Job("Hinge Cycling Test", 5,5))
-default_jobs.push(new Job("Random Vibration", 2,2, 1, true))
-default_jobs.push(new Job("Half-Sine Shock", 2,2,1, true))
-default_jobs.push(new Job("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true))
-default_jobs.push(new Job("Palm Rest Vibration",1,2))
-default_jobs.push(new Job("Hinge Cycle Abrasion", 12,2,2))
-default_jobs.push(new Job("Durability A Group", 5,4, 1,true))
-default_jobs.push(new Job("Durability B Group", 5,4, 1,true))
-default_jobs.push(new Job("Durability C Group", 5,4, 1,true))
-default_jobs.push(new Job("System Foot Abrasion", 7,5,  2))
-
-let html =`
-<table class="table table-striped table-hover">
-<thead class="thead-dark ">
-<tr>
-<th scope="col">ID</th>
-<th scope="col">Name</th>
-<th scope="col">Select</th>
-<th scope="col">Day</th>
-<th scope="col">Unit</th>
-<th scope="col">Tier</th>
-<th scope="col">Destoryed</th>
-</tr>
-</thead>
-<tbody>
-`
-//generate table HTML output
-default_jobs.forEach((default_job, i) =>{
-	let destoryedHTML = default_job.destoryed ? "checked" :""
-	let selectHTML = default_job.select ? "checked" :""
-	let rowIndex = i+1
-	html+=
-	`
-	<tr>
-	<th scope="row">${rowIndex}</th>
-	<td> ${default_job.name} </td>
-	<td><input class='selector' type="checkbox" name="select"  ${selectHTML} ></td>
-	<td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
-	<td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
-	<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
-	<td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
-	</tr>
-	`
-})
-
-html += '</tbody></table>'
-document.getElementById('list').innerHTML = html;
-
-
-
-
-//update HTML
-var updateFromHTML = function(){
-	let selector = document.getElementsByClassName('selector')
-	let day = document.getElementsByClassName('day')
-	let unit = document.getElementsByClassName('unit')
-	let tier = document.getElementsByClassName('tier')
-	let destoryed = document.getElementsByClassName('destoryed')
-
-	for (let i in default_jobs){
-		default_jobs[i].select = selector[i].checked
-		default_jobs[i].day = parseInt(day[i].value)
-		default_jobs[i].unit = parseInt(unit[i].value)
-		default_jobs[i].tier = parseInt(tier[i].value)
-		default_jobs[i].destoryed = destoryed[i].checked
+	addJob(name, day, unit, tier=1, destoryed=false){
+		this.list.push(new Job(name, day, unit, tier, destoryed))
 	}
-}
 
-var minimumRequiredSystem = function(){
-	let maxSystemPerTestItem = 0
-	let totalDestoryedSystem = 0
+	generateHTMLOutput(){
+		let html =`
+		<table class="table table-striped table-hover">
+		<thead class="thead-dark ">
+		<tr>
+		<th scope="col">ID</th>
+		<th scope="col">Name</th>
+		<th scope="col">Select</th>
+		<th scope="col">Day</th>
+		<th scope="col">Unit</th>
+		<th scope="col">Tier</th>
+		<th scope="col">Destoryed</th>
+		</tr>
+		</thead>
+		<tbody>
+		`
+		//generate table HTML output
+		this.list.forEach((default_job, i) =>{
+			let destoryedHTML = default_job.destoryed ? "checked" :""
+			let selectHTML = default_job.select ? "checked" :""
+			let rowIndex = i+1
+			html+=
+			`
+			<tr>
+			<th scope="row">${rowIndex}</th>
+			<td> ${default_job.name} </td>
+			<td><input class='selector' type="checkbox" name="select"  ${selectHTML} ></td>
+			<td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
+			<td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
+			<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
+			<td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
+			</tr>
+			`
+		})
 
-	for( i in default_jobs ){
-		if (default_jobs[i].destoryed){
-			totalDestoryedSystem += default_jobs[i].unit
-		}
-		else if( default_jobs[i].unit > maxSystemPerTestItem ){
-			maxSystemPerTestItem = default_jobs[i].unit
+		html += '</tbody></table>'
+
+		return html
+	}
+	updateFromHTML(){
+		let selector = document.getElementsByClassName('selector')
+		let day = document.getElementsByClassName('day')
+		let unit = document.getElementsByClassName('unit')
+		let tier = document.getElementsByClassName('tier')
+		let destoryed = document.getElementsByClassName('destoryed')
+
+		for (let i in this.list){
+			this.list[i].select = selector[i].checked
+			this.list[i].day = parseInt(day[i].value)
+			this.list[i].unit = parseInt(unit[i].value)
+			this.list[i].tier = parseInt(tier[i].value)
+			this.list[i].destoryed = destoryed[i].checked
 		}
 	}
-	return maxSystemPerTestItem + totalDestoryedSystem
-}
+	minimumRequiredSystem(){
+		let maxSystemPerTestItem = 0
+		let totalDestoryedSystem = 0
 
-var checkMinimumSystem = function(totalSystem, minSystem){
-	if ( totalSystem < minSystem ){
-		alert("You need at least "+minSystem+" to run this RSV test plan")
-		return false
+		this.list.forEach(job =>{ 
+			if (job.destoryed){
+				totalDestoryedSystem += job.unit
+			}
+			else if( job.unit > maxSystemPerTestItem ){
+				maxSystemPerTestItem = job.unit
+			}
+		})
+		return maxSystemPerTestItem + totalDestoryedSystem
 	}
-	return true
-}
-
-
-
-var simulator = function(totalSystem){
-	// console.log('start++')
-	
-	//get number of system from HTML and creat systems
-	let default_systems = []
-	for (var i = 0; i<totalSystem; i++){
-		default_systems.push(new System(i, 0, true))
-	}
-	//retrive data from original dataset
-	jobs = JSON.parse(JSON.stringify(default_jobs))
-	jobs = removeUnselectedItem(jobs)
-
-	let systems = JSON.parse(JSON.stringify(default_systems))
-	//Using shuffle or static sort
-	// shuffleArray(jobs)
-	jobs.sort(compare)
-
-	function removeUnselectedItem(jobs){
-		for (let i=jobs.length-1; i>=0; i--){ 
-			if ( jobs[i].select == false){
-				jobs.splice(i,1)
+	removeUnselectedItem(){
+		for (let i=this.list.length-1; i>=0; i--){ 
+			if ( this.list[i].select == false){
+				this.list.splice(i,1)
 			}
 		}
-		return jobs
 	}
-
-	//check if exist a system that still running
-	let isSystemRunning = function(){
-		for (var i in systems){
-			if (systems[i].running){
-				return true
-			}
-		}
-		return false
+	sort(){
+		this.list.sort(this._compare)
 	}
-	
-	function compare(a,b){
+	getSize(){
+		return this.list.length
+	}
+	get(i){
+		return this.list[i]
+	}
+	print(){
+		this.list.forEach( job =>{
+			console.log(job)
+		})
+	}
+	_compare(a,b){
 
 		if (a.tier > b.tier) { return -1}
 		if (a.tier < b.tier) {return 1}
@@ -187,43 +125,131 @@ var simulator = function(totalSystem){
 		if(a.unit < b.unit) {return -1}	
 		return 0;
 	}
+}
+class System{
+	constructor(id, running, available){
+		this.id = id
+		this.running = running
+		this.available = available
+		this.history = []
+	}
+}
+
+class Systems{
+	constructor(){
+		this.list = []
+	}
+	createMultipleSystem(n){
+		for (let i=0; i<n; i++){
+			this.addSystem(i,0,true)
+		}
+	}
+	addSystem(id, running, available){
+		this.list.push(new System(id, running, available))
+	}
+	isSystemRunning(){
+		this.list.forEach(system =>{
+			if (system.running){
+				return true
+			}
+		})
+		return false
+	}
 
 	//find minmim of n number of available systems
-	let find_empty_system = function(num=1){
+	find_empty_system(num=1){
 		let available = []
-		for (let i in systems){
-			s = systems[i]
-			if (s.running == 0 && s.available){
-				available.push(s)
+		this.list.forEach(system=>{
+			if (system.running == 0 && system.available){
+				available.push(system)
 			}
-		}
+		})
 		if (available.length <　num){
 			return false
 		}
 		return available.slice(0,num)
 	}
-
-	//let all systems run of 1 day
-	let systemRunning = function(){
-		for (let i in systems){
-			if (systems[i].running > 0){
-				systems[i].running -= 1
+	running (){
+		this.list.forEach( system => {
+			if (system.running > 0){
+				system.running -= 1
 			}
-		}
+		})
 	}
+}
+
+
+
+let systems = new Systems()
+
+let jobs = new Jobs()
+jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,true)
+jobs.addJob("Torsion Test (50k)", 5,3)
+jobs.addJob("System Pogo", 7,3)
+jobs.addJob("Weighted Shock Test", 1,2)
+jobs.addJob("Edu Durability Test", 10,5, 1, true)
+jobs.addJob("Free Fall Drop", 3,3, 1, true)
+jobs.addJob("Temperature/Voltage Margining Test", 10,2, 2, true)
+jobs.addJob("Wrenching Test", 7,4)
+jobs.addJob("Buffing", 1,2)
+jobs.addJob("LCD Wobble", 1,2)
+jobs.addJob("LCD POGO", 5,3)
+jobs.addJob("Palmrest POGO", 5,3)
+jobs.addJob("Button Cycling", 6,3)
+jobs.addJob("Module Cycling", 6,4)
+jobs.addJob("Power Button+ Finger Print Reader Combo Test", 10, 4, 2)
+jobs.addJob("Thermal Shock", 5,5, 1, true)
+jobs.addJob("Liquid Spill Test", 5,5, 1, true)
+jobs.addJob("Hinge Cycling Test", 5,5)
+jobs.addJob("Random Vibration", 2,2, 1, true)
+jobs.addJob("Half-Sine Shock", 2,2,1, true)
+jobs.addJob("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true)
+jobs.addJob("Palm Rest Vibration",1,2)
+jobs.addJob("Hinge Cycle Abrasion", 12,2,2)
+jobs.addJob("Durability A Group", 5,4, 1,true)
+jobs.addJob("Durability B Group", 5,4, 1,true)
+jobs.addJob("Durability C Group", 5,4, 1,true)
+jobs.addJob("System Foot Abrasion", 7,5,  2)
+
+
+document.getElementById('list').innerHTML = jobs.generateHTMLOutput();
+
+
+
+
+//update HTML
+
+
+
+
+var checkMinimumSystem = function(totalSystem, minSystem){
+	if ( totalSystem < minSystem ){
+		alert("You need at least "+minSystem+" to run this RSV test plan")
+		return false
+	}
+	return true
+}
+
+
+
+var simulator = function(totalSystem){
+	// console.log('start++')
+	
+	systems.createMultipleSystem(totalSystem)
 
 	var startRunning = function(){
 		// console.log('simulaotr++')
 		let best_result =""
 		let day = 0
 		//keep running until all jobs are done and no systems are running for remaining jobs
-		while (jobs.length > 0 || isSystemRunning()){
+		while (jobs.getSize() > 0 || systems.isSystemRunning()){
+			console.log(day)
 			//loop jobs backward
-			for (let i = jobs.length-1; i>=0; i--){
-				let job = jobs[i]
+			for (let i = jobs.getSize()-1; i>=0; i--){
+				let job = jobs.get(i)
 				// console.log(job)
 				//get empty systems
-				let available_systems = find_empty_system(job.unit)
+				let available_systems = systems.find_empty_system(job.unit)
 				if (available_systems){
 					for (let j in available_systems){
 						s = available_systems[j]
@@ -235,13 +261,13 @@ var simulator = function(totalSystem){
 						}else {s.history.push([job.name, job.tier, day, job.day])}
 					}					
 					// jobs.pop()
-					jobs.splice(i,1)
+					jobs.list.splice(i,1)
 				}
 				//if no availabe systems, means all of them are doing jobs. skip one day for it to run
 				else { continue }
 			}
 		day++
-		systemRunning()
+		systems.running()
 		}	
 		// console.log(day)
 		best_result = JSON.stringify(systems)
@@ -256,13 +282,15 @@ var simulator = function(totalSystem){
 
 var run = function(n){
 	//update current value from HTML
-	updateFromHTML()
+	jobs.updateFromHTML()
 	let totalSystem = parseInt(document.getElementById("totalSystem").value)
-	let minSystem = minimumRequiredSystem()
-	
-	if ( checkMinimumSystem(totalSystem, minSystem) == false ){ return 0}
+	let minSystem = jobs.minimumRequiredSystem()
 
-		let resultHTML = ""
+	if ( checkMinimumSystem(totalSystem, minSystem) == false ){ return 0}
+	
+	jobs.sort()
+	jobs.removeUnselectedItem()
+
 	let result = simulator(totalSystem).startRunning()
 	let day = result[0]
 	let systems = result[1]
@@ -280,7 +308,7 @@ var run = function(n){
 function outputCSVsourceData (systems){
 	let csvSourceData = []
 	csvSourceData.push( ["System", "test name", "tier", "start day", "end day"] )
-	systems.forEach( function(sys, index) {
+	systems.list.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
 			let history = sys_history
@@ -298,7 +326,7 @@ function outputCSVsourceData (systems){
 }
 function outputGoogleChartFormat(systems){
 	let chartData = []
-	systems.forEach( function(sys, index) {
+	systems.list.forEach( function(sys, index) {
 		let system_histories = sys.history
 		system_histories.forEach( (sys_history) => {
 			let history = sys_history
@@ -320,8 +348,6 @@ function outputGoogleChartFormat(systems){
 }
 
 function outputGoogleChart(systems){
-
-
 
 	chartData = outputGoogleChartFormat(systems)
 	google.charts.load("current", {packages:["timeline"]});
