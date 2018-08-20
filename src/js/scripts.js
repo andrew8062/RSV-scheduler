@@ -168,12 +168,21 @@ class Systems{
 	find_empty_system(num=1, name){
 		let available = []
 		//find all available systems
+		let pervRuleSystemFound = false
 		if (name){
-			this.list.forEach(system=>{
-				if (system.running == 0 && system.available && system.name == name){
+			console.log('find_empty_system', name)
+
+			for (let i=0; i<this.list.length; i++){
+				let system = this.list[i]
+				console.log( system.running, system.name, name, system.available)
+				if (system.running > 0 && system.name == name && system.available){
+					return false
+				}
+				else if (system.running == 0 && system.available && system.name == name){
+					pervRuleSystemFound = true
 					available.push(system)	
 				}
-			})
+			}
 		}
 
 		this.list.forEach(system=>{
@@ -181,6 +190,10 @@ class Systems{
 				available.push(system)	
 			}
 		})
+
+		if (rules.isRuleExist(name) > 0 && pervRuleSystemFound == false){
+			return false
+		}
 
 		//return false if no enough systems can be provided
 		if (available.length <　num){
@@ -196,12 +209,14 @@ class Systems{
 			if (nextRuleNames.length > 0){
 				nextRuleNames.forEach( nextRuleName=> {
 					let nextRuleJob = jobs.getByName(nextRuleName)
-					console.log('nextRuleJob', nextRuleJob)			
+					console.log('nextRuleJob', nextRuleJob)		
+					// if(nextRuleJob == undefined){
+					// 	return false
+					// }
 					let ruleUnit = nextRuleJob.unit
 
 					for (let i=0; i<returnSystems.length; i++){
 						if (returnSystems[i].name == undefined || returnSystems[i].name == name){
-							console.log(i, nextRuleJob.name)
 							returnSystems[i].name = nextRuleJob.name
 							ruleUnit -= 1
 						}
@@ -209,16 +224,16 @@ class Systems{
 							break
 						}
 					}
-					console.log('returnSystems', returnSystems)
 
 				})
-				console.log(systems.list)
 			}else{
 				returnSystems.forEach( system=> {
 					system.name = undefined
 				})
 			}
 		}
+		// console.log(systems.list)
+
 		return returnSystems
 	}
 	running (){
@@ -237,24 +252,30 @@ class Rules{
 	addRule(criteria){
 		this.list.push(criteria)
 	}
-
 	isRuleExist(name){
 		let found = false
+		let index = -1;
 		this.list.forEach( criteria=> {
 			let indexOfName = criteria.indexOf(name)
 			if ( indexOfName >= 0){
+				if (indexOfName > index) {index = indexOfName}
 				found = true
 			}
 		})
-		return found
+		return index
 	}
 
+
+
 	getNextRule(name){
+		console.log('get next rule', name)
 		let ret = []
 		for( let i=0; i<this.list.length; i++ ){
 			let criteria = this.list[i]
+			console.log(criteria)
 			let indexOfName = criteria.indexOf(name)
-			if( indexOfName < criteria.length-1 ){
+			console.log(indexOfName)
+			if( indexOfName >= 0 && indexOfName < criteria.length-1 ){
 				ret.push(criteria[ indexOfName+1 ])
 			}
 		}
@@ -266,9 +287,8 @@ class Rules{
 
 let systems = new Systems()
 let rules = new Rules()
-rules.addRule(['Temperature/Humidity Test Non Operational','Power Button+ Finger Print Reader Combo Test',
- 'System Foot Abrasion'])
-
+rules.addRule(['Temperature/Humidity Test Non Operational','Power Button+ Finger Print Reader Combo Test', 'System Foot Abrasion'])
+rules.addRule(['Wrenching Test', 'System Pogo'])
 let jobs = new Jobs()
 jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,false)
 jobs.addJob("Torsion Test (50k)", 5,3)
@@ -334,11 +354,13 @@ var simulator = function(totalSystem){
 			for (let i = jobs.getSize()-1; i>=0; i--){
 				let job = jobs.get(i)
 				//get empty systems
-				let available_systems = systems.find_empty_system(job.unit)
-				if (rules.isRuleExist(job.name)){
+				let available_systems;
+				if (rules.isRuleExist(job.name) >= 0){
 					available_systems = systems.find_empty_system(job.unit, job.name)
+				}else{
+					available_systems = systems.find_empty_system(job.unit)
 				}
-
+	
 				if (available_systems){
 					for (let j in available_systems){
 						s = available_systems[j]
