@@ -57,17 +57,18 @@
   <div class="container-fluid">
    <div class="row">
     <div class="col col-lg-12 ">
+      
+      <div  id="list">
+      </div>
       <div class="input-group mb-3 col-3">
         <div class="input-group-prepend ">
           <span class="input-group-text mt-5" id="inputGroup-sizing-default">Number of System</span>
         </div>
         <input id="totalSystem" type="text" class="form-control mt-5 " aria-label="Default" aria-describedby="inputGroup-sizing-default" value=55>
-      </div>     
-      <div  id="list">
-      </div>
+      </div> 
       <button onclick="run()" class="btn btn-info">Start</button>
       <button id="exportPDF" class="btn btn-info">Export PDF</button>
-      <div id="buttons" class="buttons"></div>
+      <!-- <div id="buttons" class="buttons"></div> -->
 
       <a id="export"></a>
 
@@ -80,7 +81,7 @@
         <div id='result'></div>
 
         <div id="waterfall" style="height: 10000px;"></div>
-    </div>
+      </div>
     </div>
   </div>
 </div>

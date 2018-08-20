@@ -52,7 +52,7 @@ class Jobs{
 			<td><input class='day' type="text" name="day" size=3 value=${default_job.day}></td>
 			<td><input class='unit' type="text" name="unit" size =3 value=${default_job.unit}></td>
 			<td><input class='tier' type="text" name="tier" size =3 value=${default_job.tier}></td>
-			<td><input class='destoryed' type="checkbox" name="firstname " ${destoryedHTML} ></div>
+			<td><input class='destoryed' type="checkbox"  ${destoryedHTML} ></div>
 			</tr>
 			`
 		})
@@ -67,12 +67,14 @@ class Jobs{
 		let unit = document.getElementsByClassName('unit')
 		let tier = document.getElementsByClassName('tier')
 		let destoryed = document.getElementsByClassName('destoryed')
+		console.log(this.list, selector,day,unit,tier, destoryed)
 
 		for (let i in this.list){
 			this.list[i].select = selector[i].checked
 			this.list[i].day = parseInt(day[i].value)
 			this.list[i].unit = parseInt(unit[i].value)
 			this.list[i].tier = parseInt(tier[i].value)
+			console.log(destoryed[i], destoryed[i].checked)
 			this.list[i].destoryed = destoryed[i].checked
 		}
 	}
@@ -156,12 +158,13 @@ class Systems{
 		this.list.push(new System(id, running, available))
 	}
 	isSystemRunning(){
-		this.list.forEach(system =>{
-			if (system.running){
-				return true
-			}
-		})
+		for(let i=0; i<this.list.length; i++){
+			if (this.list[i].running){ return true }
+		}
 		return false
+	}
+	clear(){
+		this.list = []
 	}
 
 	//find minmim of n number of available systems
@@ -290,34 +293,37 @@ let rules = new Rules()
 rules.addRule(['Temperature/Humidity Test Non Operational','Power Button+ Finger Print Reader Combo Test', 'System Foot Abrasion'])
 rules.addRule(['Temperature/Voltage Margining Test', 'Hinge Cycle Abrasion'])
 let jobs = new Jobs()
-jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,false)
-jobs.addJob("Torsion Test (50k)", 5,3)
-jobs.addJob("System Pogo", 7,3)
-jobs.addJob("Weighted Shock Test", 1,2)
-jobs.addJob("Edu Durability Test", 10,5, 1, true)
-jobs.addJob("Free Fall Drop", 3,3, 1, true)
-jobs.addJob("Temperature/Voltage Margining Test", 10,2, 2, false)
-jobs.addJob("Wrenching Test", 7,4)
-jobs.addJob("Buffing", 1,2)
-jobs.addJob("LCD Wobble", 1,2)
-jobs.addJob("LCD POGO", 5,3)
-jobs.addJob("Palmrest POGO", 5,3)
-jobs.addJob("Button Cycling", 6,3)
-jobs.addJob("Module Cycling", 6,4)
-jobs.addJob("Power Button+ Finger Print Reader Combo Test", 10, 4, 2)
-jobs.addJob("Thermal Shock", 5,5, 1, true)
-jobs.addJob("Liquid Spill Test", 5,5, 1, true)
-jobs.addJob("Hinge Cycling Test", 5,5)
-jobs.addJob("Random Vibration", 2,2, 1, true)
-jobs.addJob("Half-Sine Shock", 2,2,1, true)
-jobs.addJob("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true)
-jobs.addJob("Palm Rest Vibration",1,2)
-jobs.addJob("Hinge Cycle Abrasion", 12,2,2)
-jobs.addJob("Durability A Group", 5,4, 1,true)
-jobs.addJob("Durability B Group", 5,4, 1,true)
-jobs.addJob("Durability C Group", 5,4, 1,true)
-jobs.addJob("System Foot Abrasion", 7,5,  2)
+function restoreDefaultJob(){
+	jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,false)
+	jobs.addJob("Torsion Test (50k)", 5,3)
+	jobs.addJob("System Pogo", 7,3)
+	jobs.addJob("Weighted Shock Test", 1,2)
+	jobs.addJob("Edu Durability Test", 10,5, 1, true)
+	jobs.addJob("Free Fall Drop", 3,3, 1, true)
+	jobs.addJob("Temperature/Voltage Margining Test", 10,2, 2, false)
+	jobs.addJob("Wrenching Test", 7,4)
+	jobs.addJob("Buffing", 1,2)
+	jobs.addJob("LCD Wobble", 1,2)
+	jobs.addJob("LCD POGO", 5,3)
+	jobs.addJob("Palmrest POGO", 5,3)
+	jobs.addJob("Button Cycling", 6,3)
+	jobs.addJob("Module Cycling", 6,4)
+	jobs.addJob("Power Button+ Finger Print Reader Combo Test", 10, 4, 2)
+	jobs.addJob("Thermal Shock", 5,5, 1, true)
+	jobs.addJob("Liquid Spill Test", 5,5, 1, true)
+	jobs.addJob("Hinge Cycling Test", 5,5)
+	jobs.addJob("Random Vibration", 2,2, 1, true)
+	jobs.addJob("Half-Sine Shock", 2,2,1, true)
+	jobs.addJob("Shock Strain Test  (Intel and AMD MB only)", 3,1,1, true)
+	jobs.addJob("Palm Rest Vibration",1,2)
+	jobs.addJob("Hinge Cycle Abrasion", 12,2,2)
+	jobs.addJob("Durability A Group", 5,4, 1,true)
+	jobs.addJob("Durability B Group", 5,4, 1,true)
+	jobs.addJob("Durability C Group", 5,4, 1,true)
+	jobs.addJob("System Foot Abrasion", 7,5,  2)
+}
 
+restoreDefaultJob()
 
 document.getElementById('list').innerHTML = jobs.generateHTMLOutput();
 
@@ -342,6 +348,7 @@ var checkMinimumSystem = function(totalSystem, minSystem){
 var simulator = function(totalSystem){
 	// console.log('start++')
 	
+	systems.clear()
 	systems.createMultipleSystem(totalSystem)
 
 	var startRunning = function(){
@@ -378,6 +385,7 @@ var simulator = function(totalSystem){
 				else { continue }
 			}
 		day++
+		console.log(day)
 		systems.running()
 		}	
 		// console.log(day)
@@ -393,6 +401,9 @@ var simulator = function(totalSystem){
 
 var run = function(n){
 	//update current value from HTML
+	if(jobs.list.length ==  0){
+		restoreDefaultJob()
+	}
 	jobs.updateFromHTML()
 	let totalSystem = parseInt(document.getElementById("totalSystem").value)
 	let minSystem = jobs.minimumRequiredSystem()
@@ -504,17 +515,21 @@ function outputGoogleChart(systems){
 	    //customize bar shape-
 	    chart.draw(dataTable, options)
 	}
-	<!-- @cloudformatter calls to render the SVG -->
+	$('#exportPDF').click(function(){
+		alert('export PDF')
+		return xepOnline.Formatter.Format('waterfallWrapper', {render:'download', srctype:'svg'})
+	})
+	// <!-- @cloudformatter calls to render the SVG -->
 	    
-	<!-- Convert the SVG to PDF and download it -->
-	var click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'download', srctype:'svg'})";
-	jQuery('#buttons').append('<button onclick="'+ click +'">PDF</button>');
-	<!-- Convert the SVG to PNG@120dpi and open it -->
-	click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/png', resolution:'120', srctype:'svg'})";
-	jQuery('#buttons').append('<button onclick="'+ click +'">PNG @120dpi</button>');
-	<!-- Convert the SVG to JPG@300dpi and open it -->
-	click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/jpg', resolution:'300', srctype:'svg'})";
-	jQuery('#buttons').append('<button onclick="'+ click +'">JPG @300dpi</button>');
+	// <!-- Convert the SVG to PDF and download it -->
+	// var click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'download', srctype:'svg'})";
+	// jQuery('#buttons').append('<button onclick="'+ click +'">PDF</button>');
+	// <!-- Convert the SVG to PNG@120dpi and open it -->
+	// click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/png', resolution:'120', srctype:'svg'})";
+	// jQuery('#buttons').append('<button onclick="'+ click +'">PNG @120dpi</button>');
+	// <!-- Convert the SVG to JPG@300dpi and open it -->
+	// click="return xepOnline.Formatter.Format('waterfallWrapper', {render:'newwin', mimeType:'image/jpg', resolution:'300', srctype:'svg'})";
+	// jQuery('#buttons').append('<button onclick="'+ click +'">JPG @300dpi</button>');
 	return chartData
 }
 
