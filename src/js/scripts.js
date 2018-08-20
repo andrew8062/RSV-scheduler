@@ -170,69 +170,69 @@ class Systems{
 		//find all available systems
 		let pervRuleSystemFound = false
 		if (name){
-			console.log('find_empty_system', name)
+			// console.log('find_empty_system', name)
 
 			for (let i=0; i<this.list.length; i++){
 				let system = this.list[i]
-				console.log( system.running, system.name, name, system.available)
+				// console.log( system.running, system.name, name, system.available)
+
+				//if prev. rule systems are still running
 				if (system.running > 0 && system.name == name && system.available){
 					return false
 				}
+				//add prev rule system to follow up rules
 				else if (system.running == 0 && system.available && system.name == name){
+					//check if prev systems are foudn
 					pervRuleSystemFound = true
 					available.push(system)	
 				}
 			}
 		}
 
+		//for normal system, just return empty systems.
 		this.list.forEach(system=>{
 			if (system.running == 0 && system.available && system.name == undefined){
 				available.push(system)	
 			}
 		})
 
+		//if the job is not the head of system, and it did not find its prev rule system. Return false
 		if (rules.isRuleExist(name) > 0 && pervRuleSystemFound == false){
 			return false
 		}
 
-		//return false if no enough systems can be provided
+		//if no enough systems can be provided, return false.
 		if (available.length <　num){
 			return false
 		}
 		//return just enough systems
 		let returnSystems = available.slice(0,num)
+
 		//add wait name to system if the job has rules
 		if (name){
-			console.log('name', name)
+			//clean up old rule
+			returnSystems.forEach( system=> {
+				system.name = undefined
+			})
+			//if next rule exist			
 			let nextRuleNames = rules.getNextRule(name)
-			console.log('nextRuleNames', nextRuleNames)
+
 			if (nextRuleNames.length > 0){
 				nextRuleNames.forEach( nextRuleName=> {
+					//find rule job and how many unit it needs
 					let nextRuleJob = jobs.getByName(nextRuleName)
-					console.log('nextRuleJob', nextRuleJob)		
-					// if(nextRuleJob == undefined){
-					// 	return false
-					// }
 					let ruleUnit = nextRuleJob.unit
-
 					for (let i=0; i<returnSystems.length; i++){
-						if (returnSystems[i].name == undefined || returnSystems[i].name == name){
-							returnSystems[i].name = nextRuleJob.name
-							ruleUnit -= 1
-						}
+						returnSystems[i].name = nextRuleJob.name
+						ruleUnit -= 1
 						if (ruleUnit == 0){
 							break
 						}
 					}
 
 				})
-			}else{
-				returnSystems.forEach( system=> {
-					system.name = undefined
-				})
 			}
 		}
-		// console.log(systems.list)
 
 		return returnSystems
 	}
@@ -288,7 +288,7 @@ class Rules{
 let systems = new Systems()
 let rules = new Rules()
 rules.addRule(['Temperature/Humidity Test Non Operational','Power Button+ Finger Print Reader Combo Test', 'System Foot Abrasion'])
-rules.addRule(['Wrenching Test', 'System Pogo'])
+rules.addRule(['Temperature/Voltage Margining Test', 'Hinge Cycle Abrasion'])
 let jobs = new Jobs()
 jobs.addJob("Temperature/Humidity Test Non Operational", 7,9, 1,false)
 jobs.addJob("Torsion Test (50k)", 5,3)
@@ -296,7 +296,7 @@ jobs.addJob("System Pogo", 7,3)
 jobs.addJob("Weighted Shock Test", 1,2)
 jobs.addJob("Edu Durability Test", 10,5, 1, true)
 jobs.addJob("Free Fall Drop", 3,3, 1, true)
-jobs.addJob("Temperature/Voltage Margining Test", 10,2, 2, true)
+jobs.addJob("Temperature/Voltage Margining Test", 10,2, 2, false)
 jobs.addJob("Wrenching Test", 7,4)
 jobs.addJob("Buffing", 1,2)
 jobs.addJob("LCD Wobble", 1,2)
